@@ -17,7 +17,7 @@ from .include.transform import GeometricTransformations
 
 # Define SelfState class
 class SelfState:
-    def __init__(self, px, py, vx, vy, theta, omega, gx=-5, gy=5, radius=0.2, v_pref=0.3):
+    def __init__(self, px, py, vx, vy, theta, omega, gx=-5, gy=-5, radius=0.2, v_pref=0.3):
         self.px = px
         self.py = py
         self.vx = vx
@@ -65,6 +65,8 @@ class CrowdNavMPCNode(Node):
         # Initialize state variables
         self.self_state = None
         self.human_states = []
+        
+        self.self_state = SelfState(px=0.0, py=0.0, vx=0.0, vy=0.0, theta=0.0, omega=0.0)
 
         # Create subscribers for the custom messages
         # Create subscribers for the custom messages
@@ -112,16 +114,20 @@ class CrowdNavMPCNode(Node):
 
             transformation   = self.transform.get_transform('map', 'base_link') 
             if transformation is None:
+                print("No transformation found")
                 return
             quaternion       = (transformation.rotation.x, transformation.rotation.y, transformation.rotation.z, transformation.rotation.w)
             roll, pitch, yaw = tf_transformations.euler_from_quaternion(quaternion)
 
-            self.self_state       = SelfState(px=0.0, py=0.0, vx=0.0, vy=0.0, theta=0.0, omega=0.0)
+            
             self.self_state.px    = transformation.translation.x
             self.self_state.py    = transformation.translation.y
             self.self_state.theta = yaw
             self.self_state.vx    = linear_x*np.cos(self.self_state.theta)
             self.self_state.vy    = linear_x*np.sin(self.self_state.theta)
+            self.self_state.position = (self.self_state.px, self.self_state.py)
+            self.self_state.omega = msg.twist.twist.angular.z
+            print(f"robot state px: {self.self_state.px }")
             self.publish_commands()
 
     #def robot_goal_callback(self, msg):            
@@ -133,16 +139,27 @@ class CrowdNavMPCNode(Node):
         # Predict and publish control commands
         if self.self_state and self.human_states:
             env_state = EnvState(self.self_state, self.human_states)
+            #print(f"env state: {env_state.self_state.position}")
             action = self.mpc.predict(env_state)
+
 
             control = TwistStamped()
             control.header.stamp = self.get_clock().now().to_msg()
              
-            control.twist.linear.x = action[0]
-            control.twist.angular.z = action[1]
-            self.publisher_.publish(control)
 
-            self.get_logger().info(f"Action taken: {control}")
+            dist_to_goal = np.linalg.norm(np.array(self.self_state.position) - np.array(self.self_state.goal_position))
+            print(f" current position: {self.self_state.position} goal position: {self.self_state.goal_position} distance to goal: {dist_to_goal}")
+            print(f"Action taken: {action}")
+            if dist_to_goal < 0.5:
+                control.twist.linear.x = 0
+                control.twist.angular.z = 0
+                self.publisher_.publish(control)
+            else:            
+                control.twist.linear.x = float(action[0])
+                control.twist.angular.z = float(action[1])
+                self.publisher_.publish(control)
+
+            # self.get_logger().info(f"Action taken: {control}")
 
     
 

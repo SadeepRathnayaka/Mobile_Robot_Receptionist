@@ -137,20 +137,20 @@ class GoalPredictor(Node):
 
     def predict_goals(self):
         ######################################### For visualization  ###################################################
-        # agent_num = 5 
-        # pos, vel = self.pedestrian_state(timeStep=0, pd = agent_num )
-        # plt.clf()  
-        # plt.quiver(pos[0], pos[1], vel[0], vel[1], color='r', scale=8)  # Pedestrian velocity
-        # plt.scatter(self.destinations[:, 0], self.destinations[:, 1], c='blue', label='Destinations' , s= 50)
+        agent_num = 1 
+        pos, vel = self.pedestrian_state(timeStep=0, pd = agent_num )
+        plt.clf()  
+        plt.quiver(pos[0], pos[1], vel[0], vel[1], color='r', scale=8)  # Pedestrian velocity
+        plt.scatter(self.destinations[:, 0], self.destinations[:, 1], c='blue', label='Destinations' , s= 50)
         
         pred_dest = self.predict_destination(self.destinations)
 
         ######################################### For visualization  ###################################################
 
-        # plt.scatter(pred_dest.x[agent_num], pred_dest.y[agent_num], c='green', label='Predicted Destination', marker='X' , s= 200)
-        # plt.legend()
-        # plt.draw()  
-        # plt.pause(0.01)  
+        plt.scatter(pred_dest.x[agent_num], pred_dest.y[agent_num], c='green', label='Predicted Destination', marker='X' , s= 200)
+        plt.legend()
+        plt.draw()  
+        plt.pause(0.01)  
 
 
 def main(args=None):

@@ -97,11 +97,11 @@ class NewMPCReal():
         goal_pos = cs.MX([robot_state.gx, robot_state.gy])
 
         # Step 3: Cost function for goal deviation and control effort
-        Q_goal = 300  # Medium priority to reach the goal
-        Q_control = 30 # Moderate weight for smooth control inputs
-        Q_pref = 10    # Medium preference for stable velocity
-        Q_terminal = 300 # Strong weight to reach the goal at the terminal state
-        Q_human = 20 # 5
+        Q_goal = 100  # Medium priority to reach the goal
+        Q_control = 40 # Moderate weight for smooth control inputs
+        Q_pref = 40   # Medium preference for stable velocity
+        Q_terminal = 50 # Strong weight to reach the goal at the terminal state
+        Q_human = 1 # 5
  
 
         def cost_function(X_pred, U, human_states):
@@ -162,7 +162,7 @@ class NewMPCReal():
             
         
         # Add control bounds
-        opti.subject_to(U_opt[0, :] <= 0.3)  # Upper bound for v
+        opti.subject_to(U_opt[0, :] <= 0.8)  # Upper bound for v
         opti.subject_to(U_opt[0, :] >= 0)  # Lower bound for v
         
 
