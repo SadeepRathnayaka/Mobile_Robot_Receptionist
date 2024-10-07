@@ -24,7 +24,7 @@ def generate_launch_description():
     gazebo_sfm_plugin = get_package_share_directory("gazebo_sfm_plugin")
 
     model_path = os.path.join(smrr_description_prefix, "share")
-    model_path_ = os.path.join(gazebo_sfm_plugin, "media", "models")          # not finding the models ??
+    # model_path_ = os.path.join(gazebo_sfm_plugin, "media", "models")          # not finding the models ??
 
     model_path += pathsep + "/home/sadeep/mobile_receptionist_ws/src/gazebo_sfm_plugin-galactic/media/models"    # change the path accordingly
     env_var = SetEnvironmentVariable("GAZEBO_MODEL_PATH", model_path)
