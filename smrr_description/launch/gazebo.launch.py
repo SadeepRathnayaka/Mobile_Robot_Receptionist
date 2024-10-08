@@ -23,6 +23,7 @@ def generate_launch_description():
     smrr_description_prefix = get_package_prefix("smrr_description")
 
     model_path = os.path.join(smrr_description_prefix, "share")
+    model_path += pathsep + "/home/sadeep/mobile_receptionist_ws/src/gazebo_sfm_plugin-galactic/media/models"
     env_var = SetEnvironmentVariable("GAZEBO_MODEL_PATH", model_path)
 
     model_arg = DeclareLaunchArgument(name="model", default_value=os.path.join(
@@ -42,16 +43,16 @@ def generate_launch_description():
                     ],
     )
 
-    # gazebo_world = os.path.join(get_package_share_directory("gazebo_sfm_plugin"), "worlds", "empty_file.world")
+    gazebo_world = os.path.join(get_package_share_directory("gazebo_sfm_plugin"), "worlds", "wall.world")
 
     start_gazebo_server = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory("gazebo_ros"), "launch", "gzserver.launch.py")),
-        # launch_arguments={
-        #     "world": gazebo_world,
-        #     "server_required": "True",
-        #     "verbose": "True"
-        # }.items()
+        launch_arguments={
+            "world": gazebo_world,
+            "server_required": "True",
+            "verbose": "True"
+        }.items()
     )
 
     start_gazebo_client = IncludeLaunchDescription(
