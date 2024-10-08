@@ -38,18 +38,13 @@
       <uri>model://ground_plane</uri>
     </include>
 
-    <actor name="actor1">
-        <pose>-1 2 1.25 0 0 1.57</pose>
-        <skin>
-          <filename>/home/sithija/mobile_receptionist_ws/src/gazebo_sfm_plugin-galactic/media/models/worker_man.dae</filename>
-          <scale>1.0</scale>
-        </skin>
-        <animation name="walking">
-          <filename>/home/sithija/mobile_receptionist_ws/src/gazebo_sfm_plugin-galactic/media/models/stand.dae</filename>
-          <scale>1.000000</scale>
-          <interpolate_x>true</interpolate_x>
-        </animation>
-    </actor>
+    <model name='elevator_button_wall'>
+      <static>true</static>
+      <include>
+          <uri>model://elevator_button_wall</uri>
+      </include>
+      <pose frame=''>-2.396624 4.387607 0.502739 0 -0 0</pose>
+    </model>
 
 </world>
 </sdf>

@@ -20,7 +20,13 @@
           </mesh>
         </geometry>
       <meta> <layer> 2 </layer></meta>
-</visual>
+      <material>
+        <script>
+          <uri>model://aws_robomaker_residential_RoomWall_01/materials/textures</uri>  <!-- Path to the textures folder -->
+          <name>elevator_button.jpg</name>  <!-- Name of the image file -->
+        </script>
+      </material>
+    </visual>
     </link>
   <static>1</static>
   </model>
