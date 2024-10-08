@@ -74,6 +74,12 @@ def generate_launch_description():
         )
     )
 
+    joystick_control = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory("smrr_controller"), "launch", "joystick_teleop.launch.py")
+        )
+    )
+
     return LaunchDescription([
         *env_use_nvidia_gpu,
         env_var,
@@ -82,5 +88,6 @@ def generate_launch_description():
         start_gazebo_client,
         robot_state_publisher_node,
         spawn_robot,
-        controllers
+        controllers,
+        joystick_control
     ])
