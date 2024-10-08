@@ -12,12 +12,6 @@ import torch
 
 bridge = CvBridge()
 
-def distance_from_camera(height):
-    return (310 * 3) / height
-
-def angle_from_camera(hor_dis):
-    return (hor_dis * 45.07) / 557
-
 class CameraSubscriber(Node):
     def __init__(self):
         super().__init__('camera_subscriber')
@@ -34,6 +28,7 @@ class CameraSubscriber(Node):
             [ 0.000  ,-1.000 , 0.000 , 1.099  ],
             [ 0.000  , 0.000 , 0.000 , 1.000  ]
         ])
+        
 
     def camera_callback(self, msg):
         img         = bridge.imgmsg_to_cv2(msg, "bgr8")
@@ -53,15 +48,6 @@ class CameraSubscriber(Node):
             # Concatenate the bounding boxes, class indices, and float values into a single tensor
             new_data = torch.cat((xyxy_boxes, class_indices.unsqueeze(1), velocities.unsqueeze(1)), dim=1)
 
-            # Print the final tensor
-            print(new_data)
-
-            print("\nPreferred velocity tensor:")
-            print(results[0].names)
-            print()
-            results[0].velocity_tensor = new_data
-            print(results[0].velocity_tensor)
-
         except AttributeError:
             self.get_logger().warn("No objects detected or invalid attributes in results.")
         except Exception as e:
@@ -70,51 +56,7 @@ class CameraSubscriber(Node):
         mid_point_x = int(img.shape[1] / 2)
         mid_point_y = int(img.shape[0] / 2)
 
-        classes     = []
-        arr_x       = []
-        arr_y       = []
-
-        for r in (results):
-            boxes = r.boxes
-            
-            for box in boxes:
-                b = box.xyxy[0].to('cpu').detach().numpy().copy()
-                c = box.cls
-                conf = box.conf.item()
-                if (self.model.names[int(c)] == "normal-adult"):
-
-                    x_min = int(b[0])  # Top-left x-coordinate
-                    y_min = int(b[1])  # Top-left y-coordinate
-                    x_max = int(b[2])  # Bottom-right x-coordinate
-                    y_max = int(b[3])  # Bottom-right y-coordinate
-
-                    # Draw rectangle
-                    cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (255, 255, 0), thickness=2)
-
-                    # Height calculations
-                    height   = y_max - y_min
-                    distance = distance_from_camera(height)
-
-                    # Angle calculations, distance corrections
-                    u                  = int((x_min + x_max) / 2)  # Center x-coordinate of BB 
-                    horizontal_pixel   = u - mid_point_x
-                    angle              = angle_from_camera(horizontal_pixel)
-                    distance           = distance / np.cos(np.radians(angle))
-
-                    cam_x = distance * math.sin(math.radians(angle))
-                    cam_y = 0.0
-                    cam_z = distance * math.cos(math.radians(angle))
-
-                    # multiply by the transformation matrix
-                    lidar_x, lidar_y, lidar_z, _ = np.dot(self.lidar_to_cam_opt, [cam_x, cam_y, cam_z, 1])
-
-                    # Draw label
-                    label = f'D: {distance:.2f}m A: {angle:.2f} deg'
-                    cv2.putText(img, label, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 0), 2)
-
-                    classes.append(self.model.names[int(c)])
-                    arr_x.append(lidar_x)
-                    arr_y.append(lidar_y)
+        classes, arr_x, arr_y = self.coordinates_from_camera(results, img, mid_point_x, mid_point_y)
 
         entities = Entities()
         entities.count = len(arr_x)
@@ -125,7 +67,59 @@ class CameraSubscriber(Node):
         self.array_pub_.publish(entities)
         img_msg = bridge.cv2_to_imgmsg(img)
         self.img_pub_.publish(img_msg)
-        
+
+
+    def distance_from_camera(self, height):
+        return (310 * 3) / height
+
+
+    def angle_from_camera(self, hor_dis):
+        return (hor_dis * 45.07) / 557
+
+    
+    def coordinates_from_camera(self, results, img, mid_point_x, mid_point_y):
+        classes, arr_x, arr_y = [], [], []
+
+        for r in (results):
+            boxes = r.boxes
+            
+            for box in boxes:
+                b    = box.xyxy[0].to('cpu').detach().numpy().copy()
+                c    = box.cls
+                conf = box.conf.item()
+                if (self.model.names[int(c)] == "normal-adult"):
+
+                    x_min = int(b[0])  # Top-left x-coordinate
+                    y_min = int(b[1])  # Top-left y-coordinate
+                    x_max = int(b[2])  # Bottom-right x-coordinate
+                    y_max = int(b[3])  # Bottom-right y-coordinate
+
+                    cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (255, 255, 0), thickness=2)                          # Draw rectangle
+
+                    height   = y_max - y_min
+                    distance = self.distance_from_camera(height)
+
+                    # Angle calculations, distance corrections
+                    u                  = int((x_min + x_max) / 2)  
+                    horizontal_pixel   = u - mid_point_x
+                    angle              = self.angle_from_camera(horizontal_pixel)
+                    distance           = distance / np.cos(np.radians(angle))
+
+                    cam_x = distance * math.sin(math.radians(angle))
+                    cam_y = 0.0
+                    cam_z = distance * math.cos(math.radians(angle))
+
+                    lidar_x, lidar_y, lidar_z, _ = np.dot(self.lidar_to_cam_opt, [cam_x, cam_y, cam_z, 1])
+
+                    label = f'D: {distance:.2f}m A: {angle:.2f} deg'
+                    cv2.putText(img, label, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 0), 2)
+
+                    classes.append(self.model.names[int(c)])
+                    arr_x.append(lidar_x)
+                    arr_y.append(lidar_y)
+
+        return classes, arr_x, arr_y
+    
        
 def main(args=None):
     rclpy.init(args=args)
