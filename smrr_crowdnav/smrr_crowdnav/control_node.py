@@ -17,7 +17,7 @@ from .include.transform import GeometricTransformations
 
 # Define SelfState class
 class SelfState:
-    def __init__(self, px, py, vx, vy, theta, omega, gx=-5, gy=-5, radius=0.2, v_pref=0.3):
+    def __init__(self, px, py, vx, vy, theta, omega, gx=-4, gy=0, radius=0.25, v_pref=0.5):
         self.px = px
         self.py = py
         self.vx = vx
@@ -34,7 +34,7 @@ class SelfState:
 
 # Define HumanState class
 class HumanState:
-    def __init__(self, px, py, vx, vy, gx, gy, radius=0.15, v_pref=0.3):
+    def __init__(self, px, py, vx, vy, gx, gy, radius=0.15, v_pref=1):
         self.px = px
         self.py = py
         self.vx = vx
@@ -65,6 +65,7 @@ class CrowdNavMPCNode(Node):
         # Initialize state variables
         self.self_state = None
         self.human_states = []
+        self.ready = True
         
         self.self_state = SelfState(px=0.0, py=0.0, vx=0.0, vy=0.0, theta=0.0, omega=0.0)
 
@@ -77,18 +78,19 @@ class CrowdNavMPCNode(Node):
 
         # Publisher to send control commands (v, omega)
         self.publisher_ = self.create_publisher(TwistStamped, '/diff_drive_controller/cmd_vel', 10)
-
+       
         self.get_logger().info("Node initiated")
 
-        #self.timer = self.create_timer(0.2, self.publish_commands)
+        self.timer = self.create_timer(0.1, self.publish_commands)
 
-        self.transform = GeometricTransformations(self)                                                                   # added
+        self.transform = GeometricTransformations(self)                   
 
     def human_position_callback(self, msg):
         # Update human states with position data
         self.human_states = []
         for i in range(msg.count):
             self.human_states.append(HumanState(px=msg.x[i], py=msg.y[i], vx=0.0, vy=0.0, gx=0.0, gy=0.0))
+        #print(len(self.human_states))
 
     def human_velocity_callback(self, msg):
         # Update human states with velocity data
@@ -110,12 +112,19 @@ class CrowdNavMPCNode(Node):
 
     def robot_velocity_callback(self, msg):
             
-            linear_x         = msg.twist.twist.linear.x
+            linear_x = msg.twist.twist.linear.x
+            #print(f"linear x{linear_x}")
 
             transformation   = self.transform.get_transform('map', 'base_link') 
+
             if transformation is None:
-                print("No transformation found")
+                self.ready = False
+                self.get_logger().info("Robot not ready: No valid transformation")
                 return
+            else:
+                self.ready = True
+                self.get_logger().info("Robot ready: Transformation found")
+
             quaternion       = (transformation.rotation.x, transformation.rotation.y, transformation.rotation.z, transformation.rotation.w)
             roll, pitch, yaw = tf_transformations.euler_from_quaternion(quaternion)
 
@@ -127,19 +136,16 @@ class CrowdNavMPCNode(Node):
             self.self_state.vy    = linear_x*np.sin(self.self_state.theta)
             self.self_state.position = (self.self_state.px, self.self_state.py)
             self.self_state.omega = msg.twist.twist.angular.z
-            print(f"robot state px: {self.self_state.px }")
-            self.publish_commands()
-
-    #def robot_goal_callback(self, msg):            
-            #self.self_state.gx = msg.data[0]
-            #self.self_state.gy = msg.data[1]
+       
             
 
     def publish_commands(self):
         # Predict and publish control commands
-        if self.self_state and self.human_states:
+        if self.self_state and self.human_states and self.ready:
             env_state = EnvState(self.self_state, self.human_states)
-            #print(f"env state: {env_state.self_state.position}")
+            print(f"robot state: {env_state.self_state.px, env_state.self_state.py}")
+            print(f"human state: {env_state.human_states[0].px, env_state.human_states[0].py}")
+            
             action = self.mpc.predict(env_state)
 
 
@@ -149,17 +155,20 @@ class CrowdNavMPCNode(Node):
 
             dist_to_goal = np.linalg.norm(np.array(self.self_state.position) - np.array(self.self_state.goal_position))
             print(f" current position: {self.self_state.position} goal position: {self.self_state.goal_position} distance to goal: {dist_to_goal}")
-            print(f"Action taken: {action}")
-            if dist_to_goal < 0.5:
-                control.twist.linear.x = 0
-                control.twist.angular.z = 0
-                self.publisher_.publish(control)
-            else:            
+            
+            if (dist_to_goal >= 1):            
                 control.twist.linear.x = float(action[0])
                 control.twist.angular.z = float(action[1])
                 self.publisher_.publish(control)
+                print(f"Action taken Solved: {control}")
 
-            # self.get_logger().info(f"Action taken: {control}")
+            else:
+                control.twist.linear.x = 0.0
+                control.twist.angular.z = 0.0
+                self.publisher_.publish(control)
+                print(f"Action taken: {control}")
+
+            #self.get_logger().info(f"Action taken: {control}")
 
     
 

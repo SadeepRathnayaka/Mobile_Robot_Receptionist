@@ -9,11 +9,11 @@ class NewMPCReal():
     def __init__(self):
         
         # Environment-related variables
-        self.time_step = 0.1  # Time step for MPC
+        self.time_step = 0.2  # Time step for MPC
         self.human_max_speed = 1
         
         # MPC-related variables
-        self.horizon = 3 # Fixed time horizon
+        self.horizon = 6 # Fixed time horizon
         
 
     def predict(self, env_state):
@@ -80,11 +80,18 @@ class NewMPCReal():
                 
                 # Update the robot's state using the control input at the current time step
                 epsilon = 1e-6
+                #next_state = states[t] + cs.vertcat(
+                    #u_t[0] * (cs.sin(states[t][2] - u_t[1] * self.time_step) - cs.sin(states[t][2])) / (u_t[1] + epsilon),
+                    #u_t[0] * (-cs.cos(states[t][2] + u_t[1] * self.time_step) + cs.cos(states[t][2])) / (u_t[1] + epsilon),
+                    #u_t[1] * self.time_step
+                #)
+
                 next_state = states[t] + cs.vertcat(
-                    u_t[0] * (cs.sin(states[t][2] + u_t[1] * self.time_step) - cs.sin(states[t][2])) / (u_t[1] + epsilon),
-                    u_t[0] * (-cs.cos(states[t][2] + u_t[1] * self.time_step) + cs.cos(states[t][2])) / (u_t[1] + epsilon),
+                    u_t[0] * (cs.cos(states[t][2] + u_t[1] * self.time_step)),
+                    u_t[0] * (cs.sin(states[t][2] + u_t[1] * self.time_step)) ,
                     u_t[1] * self.time_step
                 )
+
 
                 states.append(next_state)
             
@@ -97,10 +104,10 @@ class NewMPCReal():
         goal_pos = cs.MX([robot_state.gx, robot_state.gy])
 
         # Step 3: Cost function for goal deviation and control effort
-        Q_goal = 100  # Medium priority to reach the goal
-        Q_control = 40 # Moderate weight for smooth control inputs
-        Q_pref = 40   # Medium preference for stable velocity
-        Q_terminal = 50 # Strong weight to reach the goal at the terminal state
+        Q_goal = 50000 # Medium priority to reach the goal
+        Q_control = 10 # Moderate weight for smooth control inputs
+        Q_pref = 10000 # Medium preference for stable velocity
+        Q_terminal = 100# Strong weight to reach the goal at the terminal state
         Q_human = 1 # 5
  
 
@@ -112,22 +119,23 @@ class NewMPCReal():
                 # Penalize control inputs (mainly smoothness in omega)
                 if t > 0:
                     # Penalize change in omega between consecutive time steps
-                    # control_smooth = cs.sumsqr(U[1, t])# - U[1, t - 1])
-                    control_pref = cs.sumsqr(U[0, t] - U[0, t-1])  # Prefer certain velocity
+                    control_smooth = 0 #cs.sumsqr(U[1, t])
+                    control_pref = cs.sumsqr(U[0, t] - 0.5)  # Prefer certain velocity
                 else:
-                    # control_smooth = cs.sumsqr(U[1, t])# - robot_state.omega)
+                    control_smooth = 0 #cs.sumsqr(U[1, t])
                 
-                    current_velocity = cs.vertcat(robot_state.vx, robot_state.vy)
-                    control_pref = cs.sumsqr(U[0, t] - cs.sumsqr(current_velocity))
+                    #current_velocity = cs.vertcat(robot_state.vx, robot_state.vy)
+
+                    control_pref = cs.sumsqr(U[0, t] - 0.5)
                 
                 for hum in human_states[t][1:]:
                     human_pos = cs.vertcat(hum[0], hum[1])  # Human's position
                     dist_to_human_sqr = cs.sumsqr(X_pred[t][:2] - human_pos)
                     human_radius = hum[4]  # Human's radius
-                    cost -= Q_human*(dist_to_human_sqr - (human_radius + robot_radius + 0.05)**2)  
+                    #cost -= Q_human*(dist_to_human_sqr - (human_radius + robot_radius + 0.1)**2)  
 
-                # cost += Q_goal * dist_to_goal + Q_control * control_smooth + control_pref * Q_pref
-                cost += Q_goal * dist_to_goal + control_pref * Q_pref
+                cost += Q_goal * dist_to_goal + Q_control * control_smooth + control_pref * Q_pref
+                #cost += Q_goal * dist_to_goal + control_pref * Q_pref
             
             # Terminal state goal deviation
             dist_terminal = cs.sumsqr(X_pred[-1][:2] - goal_pos)
@@ -144,14 +152,14 @@ class NewMPCReal():
                     human_pos = cs.vertcat(hum[0], hum[1])  # Human's position
                     dist_to_human_sqr = cs.sumsqr(robot_pos - human_pos)
                     human_radius = hum[4]  # Human's radius
-                    constraints.append(dist_to_human_sqr - (human_radius + robot_radius + 0.08) ** 2)  # Safety margin
+                    constraints.append(dist_to_human_sqr - (human_radius + robot_radius + 0.03) ** 2)  # Safety margin
             return constraints
 
         human_constraints = collision_constraint(X_pred, predicted_human_poses[0])
 
         # Add collision avoidance constraints for humans
-        for constr in human_constraints:
-            opti.subject_to(constr >= 0)  # No collisions
+        #for constr in human_constraints:
+            #opti.subject_to(constr >= 0)  # No collisions
 
         # Add static obstacle constraints
         
@@ -162,9 +170,11 @@ class NewMPCReal():
             
         
         # Add control bounds
-        opti.subject_to(U_opt[0, :] <= 0.8)  # Upper bound for v
-        opti.subject_to(U_opt[0, :] >= 0)  # Lower bound for v
-        
+        opti.subject_to(U_opt[0, :] <= 0.5)  # Upper bound for v
+        opti.subject_to(U_opt[0, :] >= -0.5)  # Lower bound for v
+        opti.subject_to(U_opt[1, :] >= -1)
+        opti.subject_to(U_opt[1, :] <= 1)
+      
 
         # Minimize total cost
         opti.minimize(total_cost)
@@ -185,12 +195,13 @@ class NewMPCReal():
         try:
             sol = opti.solve()
         except RuntimeError as e:
+            print("Error")
             #logging.error(f"Solver failed with error: {e}")
             return (0,0) # Safe default action
 
         # Get the optimal control input for the first step
         u_mpc = sol.value(U_opt[:, 0])    
-        action = (u_mpc[0], u_mpc[1])
+        action = (float(u_mpc[0]), float(u_mpc[1]))
         #action = ActionRot(0, 3.14)
 
         #logging.info(f"Generated action: {action}")
