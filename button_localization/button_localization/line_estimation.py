@@ -5,8 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-save_path = "/home/sadeep/mobile_receptionist_ws/src/button_localization/localization/localization_calculations.ipynb"
-
 class LidarProcessor(Node):
     def __init__(self):
         super().__init__('lidar_processor_node')
