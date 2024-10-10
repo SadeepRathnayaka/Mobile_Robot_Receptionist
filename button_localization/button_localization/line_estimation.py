@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
+from std_msgs.msg import Float32
 import numpy as np
 import matplotlib.pyplot as plt
 import time
@@ -17,7 +18,8 @@ class LidarProcessor(Node):
 
         self.offset = 0.17 # Offset in meters (offset from lidar link to left camera link optical)
 
-        self.subscription = self.create_subscription(LaserScan, '/scan', self.lidar_callback, 10)
+        self.laser_sub_ = self.create_subscription(LaserScan, '/scan', self.lidar_callback, 10)
+        self.depth_pub_ = self.create_publisher(Float32, '/button_depth', 1)
         self.get_logger().info("Lidar processor node has been started")
 
     def lidar_callback(self, lidar_data_msg):
@@ -52,6 +54,7 @@ class LidarProcessor(Node):
         
         return lidar_x, lidar_y
 
+
     def least_squares_fit(self, lidar_x, lidar_y):
         """Function to fit a line to LIDAR points using least squares method."""
 
@@ -61,34 +64,36 @@ class LidarProcessor(Node):
 
         return m, c
 
+
     def plot(self, lidar_x, lidar_y):
         """Function to plot filtered LIDAR points and the least squares line fit."""
         plt.clf()  # Clear the previous plot
         plt.scatter(lidar_y, lidar_x, c='red', label='Filtered LIDAR Points')
 
         valid_lidar_x, valid_lidar_y = self.remove_outliers(lidar_x, lidar_y)
-        plt.scatter(valid_lidar_y, valid_lidar_x, c='green', label='Valid LIDAR Points')
+        plt.scatter(valid_lidar_y, valid_lidar_x, c='green', label='Valid LIDAR Points')     # indipendent variable is y, dependent variable is x
 
         # Fit a line to the LIDAR points using least squares method
         m, c = self.least_squares_fit(valid_lidar_y, valid_lidar_x)
-        x = np.linspace(-2, 2, 100)
-        y = m * x + c
-        plt.plot(x, y, c='blue', label='Least Squares Line Fit')
-        self.get_logger().info(f"Depth to the button {c + self.offset} m")
+        y = np.linspace(-2, 2, 100)
+        x = m * y + c
+        plt.plot(y, x, c='blue', label='Least Squares Line Fit')
+
+        rounded_c = round(c, 2)
+        depth_msg = Float32()
+        depth_msg.data = rounded_c + self.offset
+        self.depth_pub_.publish(depth_msg)
 
         plt.xlim(2, -2)  # Set x-axis limits (adjust based on your environment)
         plt.ylim(0, 2)  # Set y-axis limits (adjust based on your environment)
         plt.xlabel('Y (m)')
         plt.ylabel('X (m)')
-        plt.title('Filtered LIDAR Points Visualization')
+        plt.title('Line Estimation Visualization')
         plt.legend()
         plt.draw()
         plt.pause(0.01)  # Short pause for plot update
 
-
-
-        
-        
+  
 def main(args=None):
 
     rclpy.init(args=args)
