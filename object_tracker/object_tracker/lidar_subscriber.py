@@ -50,10 +50,10 @@ class LidarSubscriber(Node):
                 self.get_logger().warn(f"Person {i} not found in LiDAR data")
                 continue
 
-            mean_lidar_x   = np.mean(lidar_points[points_within_circle, 0])
-            mean_lidar_y   = np.mean(lidar_points[points_within_circle, 1])
+            median_lidar_x   = np.median(lidar_points[points_within_circle, 0])
+            median_lidar_y   = np.median(lidar_points[points_within_circle, 1])
 
-            updated_lidar_data.append([mean_lidar_x, mean_lidar_y, class_])
+            updated_lidar_data.append([median_lidar_x, median_lidar_y, class_])
         
         lidar_data   = updated_lidar_data
 
