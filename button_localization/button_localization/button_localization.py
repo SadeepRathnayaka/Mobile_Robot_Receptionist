@@ -3,11 +3,11 @@ import rclpy
 import cv2
 from rclpy.node import Node
 from sensor_msgs.msg import Image
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32MultiArray, Float32
 from geometry_msgs.msg import Pose
 from cv_bridge import CvBridge
 import numpy as np
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, MarkerArray
 import math
 import torch
 from rclpy.executors import MultiThreadedExecutor
@@ -17,17 +17,20 @@ from geometry_msgs.msg import Point
 
 bridge = CvBridge()
 depth_ = Float32()
+grad_ = Float32()
+
 
 class ButtonLocalization(Node):
     def __init__(self):
         super().__init__("button_localization")
 
-        self.cb_group = ReentrantCallbackGroup()
-        self.image_sub_ = self.create_subscription(Image, "/zed2_left_camera/image_raw", self.camera_callback, 10, callback_group=self.cb_group)
-        self.image_pub_ = self.create_publisher(Image, "/annotated_image", 1)
-        self.pose_pub_ = self.create_publisher(Pose, "/pose_topic", 1)
-        self.marker_pub_ = self.create_publisher(Marker, "/button_marker", 1)
-        self.normal_pub_ = self.create_publisher(Marker, "/normal_marker", 1)
+        self.cb_group     = ReentrantCallbackGroup()
+        self.image_sub_   = self.create_subscription(Image, "/zed2_left_camera/image_raw", self.camera_callback, 10, callback_group=self.cb_group)
+        self.image_pub_   = self.create_publisher(Image, "/annotated_image", 1)
+        self.pose_pub_    = self.create_publisher(Pose, "/pose_topic", 1)                     # make it to publish pose array
+        self.goal_marker_ = self.create_publisher(Marker, "/goal_marker", 1)
+        self.init_marker_ = self.create_publisher(Marker, "/init_marker", 1)
+        self.normal_pub_  = self.create_publisher(Marker, "/normal_marker", 1)
 
         self.pixel_x = 900
         self.pixel_y = 280
@@ -39,11 +42,20 @@ class ButtonLocalization(Node):
         self.c_x = 640.9944295362419  
         self.c_y = 362.64041228998025
 
-        self.transform_matrix = np.array([
+        # Transformation matrix from base_link to camera_link
+        self.base_to_camera = np.array([
             [0.00  , 0.00  , 1.00 , 0.06],
             [-1.00 , 0.00  , 0.00 , 0.06],
             [0.00  ,-1.00  , 0.00 , 1.10],
             [0.00  , 0.00  , 0.00 , 1.00]
+        ])
+
+        # Transformation matrix from base_link to lidar_link
+        self.base_to_lidar = np.array([
+            [1.000, 0.000, 0.000, 0.230],
+            [0.000, 1.000, 0.000, 0.000],
+            [0.000, 0.000, 1.000, 0.001],
+            [0.000, 0.000, 0.000, 1.000]
         ])
 
         self.get_logger().info("Button Localization Node has been started")
@@ -56,12 +68,13 @@ class ButtonLocalization(Node):
         img_msg = bridge.cv2_to_imgmsg(img)
         self.image_pub_.publish(img_msg)
 
-        self.pose_calculation(self.pixel_x, self.pixel_y)
-        self.normal_visualizer()
+        normal = self.normal_vector_calculation()
+
+        init_pose, target_pose = self.pose_calculation(self.pixel_x, self.pixel_y, normal)
+        self.normal_visualizer(normal, [target_pose.position.x, target_pose.position.y, target_pose.position.z])
 
 
-    def pose_calculation(self, pixel_x, pixel_y):
-        # Calculate the position of the button in the camera frame
+    def pose_calculation(self, pixel_x, pixel_y, normal):
 
         global depth_
         depth = depth_.data
@@ -71,81 +84,104 @@ class ButtonLocalization(Node):
         Z = depth
 
         point = np.array([X, Y, Z])
-        transformed_point = np.dot(self.transform_matrix, np.append(point, 1))     # transform the point to the base_link frame
+        transformed_point = np.dot(self.base_to_camera, np.append(point, 1))     # transform the point to the base_link frame
 
-        pose = Pose()
-        pose.position.x = transformed_point[0] - 0.1
-        pose.position.y = transformed_point[1]
-        pose.position.z = transformed_point[2] 
-        self.pose_pub_.publish(pose)
+        offset = 0.1
+        init_pose = Pose()
+        init_pose.position.x = transformed_point[0] + offset * normal[0]
+        init_pose.position.y = transformed_point[1] + offset * normal[1]
+        init_pose.position.z = transformed_point[2] + offset * normal[2]
 
-        # Create and configure a Marker message for RViz visualization
-        marker = Marker()
-        marker.header.frame_id = "base_link"  
-        marker.header.stamp = self.get_clock().now().to_msg()
-        marker.ns = "button_marker"
-        marker.id = 0
-        marker.type = Marker.SPHERE  
-        marker.action = Marker.ADD
+        target_pose = Pose()
+        target_pose.position.x = transformed_point[0] 
+        target_pose.position.y = transformed_point[1]
+        target_pose.position.z = transformed_point[2] 
+        self.pose_pub_.publish(target_pose)
 
-        marker.pose.position.x = transformed_point[0] 
-        marker.pose.position.y = transformed_point[1]
-        marker.pose.position.z = transformed_point[2]
+        self.pose_visualizer([init_pose.position.x, init_pose.position.y, init_pose.position.z],
+                             [target_pose.position.x, target_pose.position.y, target_pose.position.z])
 
-        marker.scale.x = 0.05
-        marker.scale.y = 0.05
-        marker.scale.z = 0.05
-        marker.color.r = 0.0
-        marker.color.g = 1.0  # Green color
-        marker.color.b = 0.0
-        marker.color.a = 1.0  # Fully opaque
-        self.marker_pub_.publish(marker)
+        return init_pose, target_pose
 
-    
-    def normal_visualizer(self):
-        normal = np.array([-0.77, -0.0024, 0.001])  # 3D normal vector
+        
+    def pose_visualizer(self, pose1, pose2):
 
+        # Visualize the first pose using an RViz Marker
+        marker                  = Marker()
+        marker.header.frame_id  = "base_link"
+        marker.header.stamp     = self.get_clock().now().to_msg()
+        marker.ns               = "init_pose"
+        marker.id               = 1
+        marker.type             = Marker.SPHERE
+        marker.action           = Marker.ADD
+        
+        marker.scale.x          = 0.05
+        marker.scale.y          = 0.05
+        marker.scale.z          = 0.05
+        marker.color.a          = 1.0
+        marker.color.r          = 0.0
+        marker.color.g          = 1.0
+        marker.color.b          = 0.0
+
+        marker.pose.position.x  = pose1[0]
+        marker.pose.position.y  = pose1[1]
+        marker.pose.position.z  = pose1[2]
+        self.init_marker_.publish(marker)
+
+        marker.pose.position.x  = pose2[0]
+        marker.pose.position.y  = pose2[1]
+        marker.pose.position.z  = pose2[2]
+        self.goal_marker_.publish(marker)
+
+
+    def normal_vector_calculation(self):
+        global grad_
+        grad = grad_.data
+
+        normal = np.array([-1, grad, 0])                                          # 3D normal vector
+        transformed_normal = np.dot(self.base_to_lidar, np.append(normal, 1))     # transform the normal to the lidar_link frame
+
+        return transformed_normal
+
+
+    def normal_visualizer(self, normal, starting_point):
+        
         """Visualize the normal vector using an RViz Marker."""
-        marker = Marker()
-        marker.header.frame_id = "base_link"  # Base frame for RViz
-        marker.header.stamp = self.get_clock().now().to_msg()
-        marker.ns = "normal_vector"
-        marker.id = 1
-        marker.type = Marker.ARROW  # Arrow type marker
-        marker.action = Marker.ADD
+        marker                  = Marker()
+        marker.header.frame_id  = "base_link"  # Base frame for RViz
+        marker.header.stamp     = self.get_clock().now().to_msg()
+        marker.ns               = "normal_vector"
+        marker.id               = 1
+        marker.type             = Marker.ARROW  # Arrow type marker
+        marker.action           = Marker.ADD
 
-        # Arrow start point
-        start_point_x = 0.0
-        start_point_y = 0.0
-        start_point_z = 0.0
+        start_point_x           = starting_point[0]
+        start_point_y           = starting_point[1]
+        start_point_z           = starting_point[2]
 
-        # Define the marker's scale (arrow dimensions)
-        marker.scale.x = 0.1  # Shaft diameter
-        marker.scale.y = 0.2  # Arrowhead diameter
-        marker.scale.z = 0.2  # Arrowhead length
+        marker.scale.x          = 0.01  # Shaft diameter
+        marker.scale.y          = 0.05  # Arrowhead diameter
+        marker.scale.z          = 0.2  # Arrowhead length
 
-        # Define the arrow's start and end points using the normal vector
-        marker.points = []
-        start_point = Point()
-        start_point.x = start_point_x
-        start_point.y = start_point_y
-        start_point.z = start_point_z
+        marker.points           = []
+        start_point             = Point()
+        start_point.x           = start_point_x
+        start_point.y           = start_point_y
+        start_point.z           = start_point_z
 
-        end_point = Point()
-        end_point.x = start_point_x + normal[0]
-        end_point.y = start_point_y + normal[1]
-        end_point.z = start_point_z + normal[2]
+        end_point               = Point()
+        end_point.x             = start_point_x + normal[0]
+        end_point.y             = start_point_y + normal[1]
+        end_point.z             = start_point_z + normal[2]
 
-        marker.points.append(start_point)  # Use ROS Point message for points
+        marker.points.append(start_point)  
         marker.points.append(end_point)
 
-        # Set the color of the marker
-        marker.color.a = 1.0  # Alpha (opacity)
-        marker.color.r = 1.0  # Red
-        marker.color.g = 0.0  # Green
-        marker.color.b = 0.0  # Blue
+        marker.color.a          = 1.0  # Alpha (opacity)
+        marker.color.r          = 1.0  # Red
+        marker.color.g          = 0.0  # Green
+        marker.color.b          = 0.0  # Blue
 
-        # Publish the marker to visualize the arrow
         self.normal_pub_.publish(marker)
 
 
@@ -153,23 +189,34 @@ class DepthSubscriber(Node):
     def __init__(self):
         super().__init__("depth_subscriber")
 
-        self.cb_group = ReentrantCallbackGroup()
-        self.depth_sub_ = self.create_subscription(Float32, "/button_depth", self.depth_callback, 10, callback_group=self.cb_group)
+        self.cb_group   = ReentrantCallbackGroup()
+        self.depth_sub_ = self.create_subscription(Float32MultiArray, "/button_info", self.depth_callback, 10, callback_group=self.cb_group)
+
+        self.depth_arr  = np.array([])
+        self.grad_arr   = np.array([])
 
     def depth_callback(self, msg):
-        global depth_
-        depth_ = msg
+        if (len(self.depth_arr) < 5):
+            self.depth_arr  = np.append(self.depth_arr, msg.data[0])
+            self.grad_arr   = np.append(self.grad_arr, msg.data[1])
+        else:
+            depth_.data    = np.mean(self.depth_arr)
+            grad_.data     = np.median(self.grad_arr)
+            self.depth_arr = np.array([])
+            self.grad_arr  = np.array([])
+            
 
 def main(args=None):
     rclpy.init(args=args)
 
     button_localization = ButtonLocalization()
-    depth_subscriber = DepthSubscriber()
+    depth_subscriber    = DepthSubscriber()
 
-    executor = MultiThreadedExecutor()
+    executor            = MultiThreadedExecutor()
     executor.add_node(button_localization)
     executor.add_node(depth_subscriber)
     executor.spin()
+
 
 if __name__ == "__main__":
     main()
