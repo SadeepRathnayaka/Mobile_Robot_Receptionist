@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32MultiArray
 import numpy as np
 import matplotlib.pyplot as plt
 import time
@@ -19,7 +19,7 @@ class LidarProcessor(Node):
         self.offset = 0.17 # Offset in meters (offset from lidar link to left camera link optical)
 
         self.laser_sub_ = self.create_subscription(LaserScan, '/scan', self.lidar_callback, 10)
-        self.depth_pub_ = self.create_publisher(Float32, '/button_depth', 1)
+        self.button_info_pub_ = self.create_publisher(Float32MultiArray, '/button_info', 1)
         self.get_logger().info("Lidar processor node has been started")
 
     def lidar_callback(self, lidar_data_msg):
@@ -47,7 +47,7 @@ class LidarProcessor(Node):
         # find median of x
         x_median = np.median(lidar_x)
 
-        # keep the points that are within 0.2m of the median
+        # keep the points that are within 0.05m of the median
         indices = (lidar_x > x_median - 0.05) & (lidar_x < x_median + 0.05)
         lidar_x = lidar_x[indices]
         lidar_y = lidar_y[indices]
@@ -79,10 +79,15 @@ class LidarProcessor(Node):
         x = m * y + c
         plt.plot(y, x, c='blue', label='Least Squares Line Fit')
 
-        rounded_c = round(c, 2)
-        depth_msg = Float32()
-        depth_msg.data = rounded_c + self.offset
-        self.depth_pub_.publish(depth_msg)
+        rounded_c = round(c, 2)                        # depth to the button from the lidar link
+        rounded_c_offset = c + self.offset             # depth to the button from the camera link
+        rounded_c_offset = round(rounded_c_offset, 2)
+
+        rounded_m = round(m, 2)
+
+        button_info = Float32MultiArray()
+        button_info.data = [rounded_c_offset, rounded_m]
+        self.button_info_pub_.publish(button_info)
 
         plt.xlim(2, -2)  # Set x-axis limits (adjust based on your environment)
         plt.ylim(0, 2)  # Set y-axis limits (adjust based on your environment)
