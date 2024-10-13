@@ -4,7 +4,7 @@ import cv2
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float32MultiArray, Float32
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import PoseArray, Pose
 from cv_bridge import CvBridge
 import numpy as np
 from visualization_msgs.msg import Marker, MarkerArray
@@ -27,7 +27,7 @@ class ButtonLocalization(Node):
         self.cb_group     = ReentrantCallbackGroup()
         self.image_sub_   = self.create_subscription(Image, "/zed2_left_camera/image_raw", self.camera_callback, 10, callback_group=self.cb_group)
         self.image_pub_   = self.create_publisher(Image, "/annotated_image", 1)
-        self.pose_pub_    = self.create_publisher(Pose, "/pose_topic", 1)                     # make it to publish pose array
+        self.pose_pub_    = self.create_publisher(PoseArray, "/pose_topic", 1)                     # make it to publish pose array
         self.goal_marker_ = self.create_publisher(Marker, "/goal_marker", 1)
         self.init_marker_ = self.create_publisher(Marker, "/init_marker", 1)
         self.normal_pub_  = self.create_publisher(Marker, "/normal_marker", 1)
@@ -86,17 +86,24 @@ class ButtonLocalization(Node):
         point = np.array([X, Y, Z])
         transformed_point = np.dot(self.base_to_camera, np.append(point, 1))     # transform the point to the base_link frame
 
-        offset = 0.1
+        offset = 0.2
         init_pose = Pose()
-        init_pose.position.x = transformed_point[0] + offset * normal[0]
-        init_pose.position.y = transformed_point[1] + offset * normal[1]
-        init_pose.position.z = transformed_point[2] + offset * normal[2]
+        init_pose.position.x        = transformed_point[0] + offset * normal[0]   # the initial point the arm is moving to
+        init_pose.position.y        = transformed_point[1] + offset * normal[1]
+        init_pose.position.z        = transformed_point[2] + offset * normal[2]
 
         target_pose = Pose()
-        target_pose.position.x = transformed_point[0] 
-        target_pose.position.y = transformed_point[1]
-        target_pose.position.z = transformed_point[2] 
-        self.pose_pub_.publish(target_pose)
+        target_pose.position.x      = transformed_point[0] + 0.05 * normal[0]     # 5 cm away from the goal position, if the arm hits the wall the robot will fall back in simulation.
+        target_pose.position.y      = transformed_point[1] + 0.05 * normal[1]
+        target_pose.position.z      = transformed_point[2] + 0.05 * normal[2]
+
+        pose_array                  = PoseArray()
+        pose_array.header.frame_id  = "base_link"
+        pose_array.header.stamp     = self.get_clock().now().to_msg()
+        pose_array.poses.append(init_pose)
+        pose_array.poses.append(target_pose)
+        pose_array.poses.append(init_pose)
+        self.pose_pub_.publish(pose_array)
 
         self.pose_visualizer([init_pose.position.x, init_pose.position.y, init_pose.position.z],
                              [target_pose.position.x, target_pose.position.y, target_pose.position.z])
@@ -189,21 +196,21 @@ class DepthSubscriber(Node):
     def __init__(self):
         super().__init__("depth_subscriber")
 
-        self.cb_group   = ReentrantCallbackGroup()
-        self.depth_sub_ = self.create_subscription(Float32MultiArray, "/button_info", self.depth_callback, 10, callback_group=self.cb_group)
+        self.cb_group       = ReentrantCallbackGroup()
+        self.depth_sub_     = self.create_subscription(Float32MultiArray, "/button_info", self.depth_callback, 10, callback_group=self.cb_group)
 
-        self.depth_arr  = np.array([])
-        self.grad_arr   = np.array([])
+        self.depth_arr      = np.array([])
+        self.grad_arr       = np.array([])
 
     def depth_callback(self, msg):
         if (len(self.depth_arr) < 5):
             self.depth_arr  = np.append(self.depth_arr, msg.data[0])
             self.grad_arr   = np.append(self.grad_arr, msg.data[1])
         else:
-            depth_.data    = np.mean(self.depth_arr)
-            grad_.data     = np.median(self.grad_arr)
-            self.depth_arr = np.array([])
-            self.grad_arr  = np.array([])
+            depth_.data     = np.mean(self.depth_arr)
+            grad_.data      = np.median(self.grad_arr)
+            self.depth_arr  = np.array([])
+            self.grad_arr   = np.array([])
             
 
 def main(args=None):
