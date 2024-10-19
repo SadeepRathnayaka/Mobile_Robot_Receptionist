@@ -19,8 +19,8 @@ class CameraSubscriber(Node):
         self.model   = YOLO('/home/sadeep/mobile_receptionist_ws/src/object_tracker/object_tracker/best.pt')
 
         self.sub_       = self.create_subscription(Image, '/zed2_left_camera/image_raw', self.camera_callback, 10)
-        self.img_pub_   = self.create_publisher(Image, '/inference_result', 1)
-        self.array_pub_ = self.create_publisher(Entities, '/visual_dynamic_obs_array', 1)
+        self.img_pub_   = self.create_publisher(Image, '/object_tracker/inference_result', 1)
+        self.array_pub_ = self.create_publisher(Entities, '/object_tracker/visual_dynamic_obs_array', 1)
 
         self.lidar_to_cam_opt = np.array([
             [ 0.000  , 0.000 , 1.000 ,-0.170  ],
