@@ -5,7 +5,6 @@ from sensor_msgs.msg import LaserScan
 from smrr_interfaces.msg import Entities
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
-from visualization_msgs.msg import Marker, MarkerArray
 from .include.transform import GeometricTransformations
 
 # Global variables
