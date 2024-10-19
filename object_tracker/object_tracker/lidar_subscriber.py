@@ -17,7 +17,7 @@ class LidarSubscriber(Node):
         super().__init__("lidar_subscriber")
         self.cb_group      = ReentrantCallbackGroup()
         self.laser_sub_    = self.create_subscription(LaserScan, "/scan", self.lidar_callback, 10, callback_group=self.cb_group)
-        self.laser_pub_    = self.create_publisher(Entities, "/laser_data_array", 10)
+        self.laser_pub_    = self.create_publisher(Entities, "/object_tracker/laser_data_array", 10)
         self.transform     = GeometricTransformations(self)
 
         self.get_logger().info("Lidar subscriber node has been started")
