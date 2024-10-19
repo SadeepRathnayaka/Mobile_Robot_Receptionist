@@ -20,8 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'line_estimation = button_localization.line_estimation:main',
+            'line_estimation     = button_localization.line_estimation:main',
             'button_localization = button_localization.button_localization:main',
+            'button_detection    = button_localization.button_detection:main'
         ],
     },
 )
