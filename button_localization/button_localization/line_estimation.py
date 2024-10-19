@@ -19,7 +19,7 @@ class LidarProcessor(Node):
         self.offset = 0.17 # Offset in meters (offset from lidar link to left camera link optical)
 
         self.laser_sub_ = self.create_subscription(LaserScan, '/scan', self.lidar_callback, 10)
-        self.button_info_pub_ = self.create_publisher(Float32MultiArray, '/button_info', 1)
+        self.button_info_pub_ = self.create_publisher(Float32MultiArray, '/button_localization/button_info', 1)
         self.get_logger().info("Lidar processor node has been started")
 
     def lidar_callback(self, lidar_data_msg):
