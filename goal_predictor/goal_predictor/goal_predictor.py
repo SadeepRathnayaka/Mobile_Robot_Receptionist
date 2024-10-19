@@ -11,7 +11,7 @@ class GoalPredictor(Node):
         super().__init__('goal_predictor')
         self.pos_subscription = self.create_subscription(
             Entities,
-            'laser_data_array',
+            '/object_tracker/laser_data_array',
             self.predictor_callback,
             10)
         
