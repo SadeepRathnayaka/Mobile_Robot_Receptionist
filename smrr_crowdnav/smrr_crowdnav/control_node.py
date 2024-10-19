@@ -71,7 +71,7 @@ class CrowdNavMPCNode(Node):
 
         # Create subscribers for the custom messages
         # Create subscribers for the custom messages
-        self.create_subscription(Entities, '/laser_data_array', self.human_position_callback, 10)
+        self.create_subscription(Entities, '/object_tracker/laser_data_array', self.human_position_callback, 10)
         self.create_subscription(Entities, '/vel', self.human_velocity_callback, 10)
         self.create_subscription(Entities, '/goals', self.human_goal_callback, 10)
         self.create_subscription(Odometry, '/diff_drive_controller/odom', self.robot_velocity_callback, 10)
