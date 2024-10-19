@@ -71,7 +71,7 @@ class ButtonLocalization(Node):
         normal = self.normal_vector_calculation()
 
         init_pose, target_pose = self.pose_calculation(self.pixel_x, self.pixel_y, normal)
-        self.normal_visualizer(normal, [target_pose.position.x, target_pose.position.y, target_pose.position.z])
+        self.normal_visualizer(normal, [init_pose.position.x, init_pose.position.y, init_pose.position.z])
 
 
     def pose_calculation(self, pixel_x, pixel_y, normal):
@@ -177,9 +177,9 @@ class ButtonLocalization(Node):
         start_point.z           = start_point_z
 
         end_point               = Point()
-        end_point.x             = start_point_x + normal[0]
-        end_point.y             = start_point_y + normal[1]
-        end_point.z             = start_point_z + normal[2]
+        end_point.x             = start_point_x + (-1*normal[0])
+        end_point.y             = start_point_y + (-1*normal[1])
+        end_point.z             = start_point_z + (-1*normal[2])
 
         marker.points.append(start_point)  
         marker.points.append(end_point)
@@ -197,7 +197,7 @@ class DepthSubscriber(Node):
         super().__init__("depth_subscriber")
 
         self.cb_group       = ReentrantCallbackGroup()
-        self.depth_sub_     = self.create_subscription(Float32MultiArray, "/button_info", self.depth_callback, 10, callback_group=self.cb_group)
+        self.depth_sub_     = self.create_subscription(Float32MultiArray, "/button_localization/button_info", self.depth_callback, 10, callback_group=self.cb_group)
 
         self.depth_arr      = np.array([])
         self.grad_arr       = np.array([])
