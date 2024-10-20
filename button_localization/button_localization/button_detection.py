@@ -7,6 +7,7 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Int16MultiArray
 from .include.button_detection_utils import ButtonDetectionUtils
 
+
 bridge = CvBridge()
 
 class ButtonDetection(Node):
@@ -22,7 +23,8 @@ class ButtonDetection(Node):
         self.get_logger().info("Target button is set to : %s" % self.target_button)
         self.get_logger().info("Subscriber topic is set to : %s" % self.subcriber_topic)
 
-        self.model          = YOLO("/home/sadeep/mobile_receptionist_ws/src/object_tracker/object_tracker/best.pt")
+        path                = "/home/sadeep/mobile_receptionist_ws/src/button_localization/button_localization/yolo_button_detection.pt"
+        self.model          = YOLO(path)
 
         self.img_sub_       = self.create_subscription(Image, "/zed2_left_camera/image_raw",self.camera_callback, 10)
         self.img_pub_       = self.create_publisher(Image, "/button_localization/detected_buttons", 10)
