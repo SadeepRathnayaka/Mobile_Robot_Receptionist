@@ -7,20 +7,15 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Entities.msg"
   "msg/InferenceResult.msg"
   "msg/Yolov10Inference.msg"
-  DEPENDENCIES std_msgs
+  "action/ArmControlServer.action"
+  DEPENDENCIES std_msgs geometry_msgs
  )
-
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  set(ament_cmake_copyright_FOUND TRUE)
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
 
 ament_package()
