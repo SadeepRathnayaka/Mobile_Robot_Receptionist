@@ -1,113 +1,78 @@
 import rclpy
-import cv2
 from rclpy.node import Node
-from sensor_msgs.msg import Image
-from std_msgs.msg import Float32MultiArray, Float32, Int16, Int16MultiArray
-from geometry_msgs.msg import PoseArray
-from cv_bridge import CvBridge
-import numpy as np
-from visualization_msgs.msg import Marker
-from rclpy.executors import MultiThreadedExecutor
-from rclpy.callback_groups import ReentrantCallbackGroup
+import rclpy.parameter
 from .include.button_localization_utils import ButtonLocalizationUtils
-
-
-bridge = CvBridge()
-depth_, grad_    = Float32(), Float32()
-pixel_x_, pixel_y_ = Int16(), Int16()
 
 
 class ButtonLocalization(Node):
     def __init__(self):
         super().__init__("button_localization")
 
-        self.cb_group     = ReentrantCallbackGroup()
-        self.image_sub_   = self.create_subscription(Image, "/zed2_left_camera/image_raw", self.camera_callback, 10, callback_group=self.cb_group)
-        # self.image_pub_   = self.create_publisher(Image, "/annotated_image", 1)
-        self.pose_pub_    = self.create_publisher(PoseArray, "/button_localization/pose_topic", 1)                     # make it to publish pose array
-        self.goal_marker_ = self.create_publisher(Marker,    "/button_localization/goal_marker", 1)
-        self.init_marker_ = self.create_publisher(Marker,    "/button_localization/init_marker", 1)
-        self.normal_pub_  = self.create_publisher(Marker,    "/button_localization/normal_marker", 1)
+        self.declare_parameter("start_pose_estimation", False)
 
-        self.button_localization_utils = ButtonLocalizationUtils(
-            self, self.pose_pub_, 
-            self.goal_marker_, self.init_marker_, self.normal_pub_
-        )
+        self.button_localization_utils = ButtonLocalizationUtils(self)
+
+        self.yaml_path    = "/home/sadeep/mobile_receptionist_ws/src/button_localization/config/elevator_interaction.yaml"
+        self.timer_       = self.create_timer(0.1, self.check_pose_estimation_param)
+        self.data         = self.button_localization_utils.read_yaml(self.yaml_path)
 
         self.get_logger().info("Button Localization Node has been started")
 
+    def check_pose_estimation_param(self):
+        start_pose_estimation = self.get_parameter("start_pose_estimation").get_parameter_value().bool_value
 
-    def camera_callback(self, msg):
-        global depth_ , grad_, pixel_x_, pixel_y_
-
-        # pixel representation
-        # img = bridge.imgmsg_to_cv2(msg, "bgr8")
-        # cv2.circle(img, (pixel_x_.data, pixel_y_.data), 15, (0, 0, 255), -1)
-
-        # img_msg = bridge.cv2_to_imgmsg(img)
-        # self.image_pub_.publish(img_msg)
-
-        # button pose calculations
-        normal = self.button_localization_utils.normal_vector_calculation(grad_)        
-        init_pose, target_pose = self.button_localization_utils.pose_calculation(pixel_x_, pixel_y_,normal, depth_,)
-        self.button_localization_utils.normal_visualizer(normal, [init_pose.position.x, init_pose.position.y, init_pose.position.z])
+        if (start_pose_estimation):
+            self.get_logger().info("Starting button pose estimation.")
+            self.estimate_pose()
 
 
-class DepthSubscriber(Node):
-    def __init__(self):
-        super().__init__("depth_subscriber")
+    def estimate_pose(self):
 
-        self.cb_group          = ReentrantCallbackGroup()
-        self.depth_sub_        = self.create_subscription(Float32MultiArray, "/button_localization/button_info", self.depth_callback, 10, callback_group=self.cb_group)
+        grad_   = self.data['elevator_interaction']['gradient']
+        depth_  = self.data['elevator_interaction']['depth']
+        pixel_x = self.data['elevator_interaction']['pixel_coordinates']['x'] 
+        pixel_y = self.data['elevator_interaction']['pixel_coordinates']['y'] 
 
-        self.depth_arr         = np.array([])
-        self.grad_arr          = np.array([])
+        normal  = self.button_localization_utils.normal_vector_calculation(grad_)
+        initial_pose, target_pose = self.button_localization_utils.pose_calculation(pixel_x, pixel_y, normal,depth_)
 
-    def depth_callback(self, msg):
-        if (len(self.depth_arr) < 5):
-            self.depth_arr     = np.append(self.depth_arr, msg.data[0])
-            self.grad_arr      = np.append(self.grad_arr, msg.data[1])
-        else:
-            depth_.data        = np.mean(self.depth_arr)
-            grad_.data         = np.median(self.grad_arr)
-            self.depth_arr     = np.array([])
-            self.grad_arr      = np.array([])
+        self.data['elevator_interaction']['initial_pose'] = {
+            'x':     round(float(initial_pose.position.x), 3),
+            'y':     round(float(initial_pose.position.y), 3),
+            'z':     round(float(initial_pose.position.z), 3),
+            'roll':  0.0,  
+            'pitch': 0.0,  
+            'yaw':   0.0,   
+        }
 
+        self.data['elevator_interaction']['target_pose'] = {
+            'x':     round(float(target_pose.position.x), 3),
+            'y':     round(float(target_pose.position.y), 3),
+            'z':     round(float(target_pose.position.z), 3),
+            'roll':  0.0,
+            'pitch': 0.0,
+            'yaw':   0.0,
+        }
 
-class PixelSubscriber(Node):
-    def __init__(self):
-        super().__init__("pixel_subscriber")
+        self.button_localization_utils.update_yaml(self.yaml_path, self.data)
+        self.get_logger().info("Poses are successfully updated.")
 
-        self.cb_group          = ReentrantCallbackGroup()
-        self.pixel_sub_        = self.create_subscription(Int16MultiArray, "/button_localization/pixel_coordinates", self.pixel_callback, 10, callback_group=self.cb_group)
-        
-        self.pixel_x_arr       = np.array([])
-        self.pixel_y_arr       = np.array([])
-
-    def pixel_callback(self, msg):
-        if (len(self.pixel_x_arr) < 5):
-            self.pixel_x_arr   = np.append(self.pixel_x_arr, msg.data[0])
-            self.pixel_y_arr   = np.append(self.pixel_y_arr, msg.data[1])
-        else:
-            pixel_x_.data      = int(np.median(self.pixel_x_arr))
-            pixel_y_.data      = int(np.median(self.pixel_y_arr))
-            self.pixel_x_arr   = np.array([])
-            self.pixel_y_arr   = np.array([])
+        self.set_parameters([rclpy.parameter.Parameter("start_pose_estimation", rclpy.Parameter.Type.BOOL, False)])
+        self.set_parameters([rclpy.parameter.Parameter("start_joint_calculations", rclpy.Parameter.Type.BOOL, False)])
 
 
 def main(args=None):
     rclpy.init(args=args)
 
-    button_localization = ButtonLocalization()
-    depth_subscriber    = DepthSubscriber()
-    pixel_subscriber    = PixelSubscriber()
+    button_localization_node = ButtonLocalization()
 
-    executor            = MultiThreadedExecutor()
-    executor.add_node(button_localization)
-    executor.add_node(depth_subscriber)
-    executor.add_node(pixel_subscriber)
-    executor.spin()
-
+    try:
+        rclpy.spin(button_localization_node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        button_localization_node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == "__main__":
     main()
