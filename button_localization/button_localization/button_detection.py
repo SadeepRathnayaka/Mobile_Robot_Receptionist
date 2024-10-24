@@ -46,7 +46,7 @@ class ButtonDetection(Node):
             if (len(self.x_pixel_buffer) < self.buffer_size) :
 
                 pixel_x, pixel_y = self.button_detection_utils.camera_callback(
-                    msg, self.model, self.target_button, self.img_pub_, self.pixel_pub_)
+                    msg, self.model, self.target_button)
                 
                 self.x_pixel_buffer = np.append(self.x_pixel_buffer, pixel_x)
                 self.y_pixel_buffer = np.append(self.y_pixel_buffer, pixel_y)
