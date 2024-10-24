@@ -40,8 +40,7 @@ private:
 
             timer_->cancel();
 
-            if (!client_->wait_for_action_server(5s))
-            {
+            if (!client_->wait_for_action_server(5s)){
                 RCLCPP_ERROR(rclcpp::get_logger("ArmControlClient"), "Action server not available, cancelling the action client...");
                 rclcpp::shutdown();
                 return;
@@ -60,24 +59,19 @@ private:
         // Determine which goal to send based on the current stage
         auto goal_msg = smrr_interfaces::action::ArmControlServer::Goal();
         
-        if (current_goal_stage_ == 0)
-        {
+        if (current_goal_stage_ == 0){
             goal_msg.target_joints_angles = read_yaml("initial_joint_angles");
         }
-        else if (current_goal_stage_ == 1)
-        {
+        else if (current_goal_stage_ == 1){
             goal_msg.target_joints_angles = read_yaml("target_joint_angles");
         }
-        else if (current_goal_stage_ == 2)
-        {
+        else if (current_goal_stage_ == 2){
             goal_msg.target_joints_angles = read_yaml("end_joint_angles");
         }
-        else if (current_goal_stage_ == 3)
-        {
+        else if (current_goal_stage_ == 3){
             goal_msg.target_joints_angles = read_yaml("home_joint_angles");
         }
-        else
-        {
+        else{
             RCLCPP_INFO(rclcpp::get_logger("ArmControlClient"), "All goals completed.");
             rclcpp::shutdown();
             return;
@@ -89,15 +83,14 @@ private:
 
     void goalCallback(const rclcpp_action::ClientGoalHandle<smrr_interfaces::action::ArmControlServer>::SharedPtr& goal_handle)
     {
-        if (!goal_handle)
-        {
+        if (!goal_handle){
             RCLCPP_ERROR(rclcpp::get_logger("ArmControlClient"), "Goal was rejected by server");
-        }
-        else
-        {
+            }
+        else{
             RCLCPP_INFO(rclcpp::get_logger("ArmControlClient"), "Goal accepted by server, waiting for result");
-        }
+            }
     }
+
 
 
     void resultCallback(const rclcpp_action::ClientGoalHandle<smrr_interfaces::action::ArmControlServer>::WrappedResult& result)
@@ -107,27 +100,24 @@ private:
         case rclcpp_action::ResultCode::SUCCEEDED:
             RCLCPP_INFO(rclcpp::get_logger("ArmControlClient"), "Goal %d reached successfully", (current_goal_stage_+1));
             break;
-        
         case rclcpp_action::ResultCode::ABORTED:
             RCLCPP_ERROR(rclcpp::get_logger("ArmControlClient"), "Goal was aborted");
             rclcpp::shutdown();
             return;
-
         case rclcpp_action::ResultCode::CANCELED:
             RCLCPP_ERROR(rclcpp::get_logger("ArmControlClient"), "Goal was canceled");
             rclcpp::shutdown();
             return;
-
         default:
             RCLCPP_ERROR(rclcpp::get_logger("ArmControlClient"), "Unknown result code");
             rclcpp::shutdown();
             return;
         }
 
-        // After each successful result, increment the goal stage and send the next goal
         current_goal_stage_++;
         sendNextGoal();
     }
+
 
     std_msgs::msg::Float64MultiArray read_yaml(std::string target_joint_angles)
     {
