@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+from glob import glob
+import os
 
 package_name = 'button_localization'
 
@@ -10,6 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*.visualization.launch.py'))
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -22,7 +25,9 @@ setup(
         'console_scripts': [
             'line_estimation     = button_localization.line_estimation:main',
             'button_localization = button_localization.button_localization:main',
-            'button_detection    = button_localization.button_detection:main'
+            'button_detection    = button_localization.button_detection:main',
+            'yolo_node           = button_localization.yolo_node:main' ,
+            'visualizer_node     = button_localization.visualizer_node:main'         
         ],
     },
 )
