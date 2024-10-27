@@ -16,7 +16,7 @@ class ButtonDetection(Node):
         super().__init__("button_detection")
         
         self.declare_parameter("start_button_detection", False)
-        self.declare_parameter("target_button", "up")
+        self.declare_parameter("target_button", "button-up")
         self.declare_parameter("subscriber_topic", "/zed2_left_camera/image_raw")
 
         self.target_button   = self.get_parameter("target_button").get_parameter_value().string_value
@@ -65,7 +65,6 @@ class ButtonDetection(Node):
                 self.get_logger().info("Starting the line estimation process...")
 
                 self.set_parameters([rclpy.parameter.Parameter("start_button_detection", rclpy.Parameter.Type.BOOL, False)])
-                self.set_parameters([rclpy.parameter.Parameter("start_line_estimation",  rclpy.Parameter.Type.BOOL, True )])
 
         else:
             return
