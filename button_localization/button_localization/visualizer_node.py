@@ -2,21 +2,31 @@ import rclpy
 from rclpy.node import Node
 import yaml
 from visualization_msgs.msg import Marker
+from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
 import numpy as np
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import ReentrantCallbackGroup
 
+from ultralytics import YOLO
+import cv2
+from cv_bridge import CvBridge
+
+
+bridge = CvBridge()
 
 class VisualizerNode(Node):
     def __init__(self):
         super().__init__("visualizer_node")
+
 
         self.yaml_path    = "/home/sadeep/mobile_receptionist_ws/src/button_localization/config/elevator_interaction.yaml"
         self.data         = self.read_yaml(self.yaml_path)
 
         self.init_pose_pub_   = self.create_publisher(Marker, "/visualizer/init_pose", 10)
         self.target_pose_pub_ = self.create_publisher(Marker, "/visualizer/target_pose", 10)
-        self.normal_pub_      = self.create_publisher(Marker, "/visualizer/normal_vector", 10)
-
+        self.normal_pub_      = self.create_publisher(Marker, "/visualizer/normal_vector", 10 ) 
+        
         # Transformation matrix from base_link to lidar_link
         self.base_to_lidar = np.array([
             [1.000, 0.000, 0.000, 0.230],
@@ -118,18 +128,70 @@ class VisualizerNode(Node):
         
         return data
     
+
+
+class YoloNode(Node):
+    def __init__(self):
+        super().__init__("yolo_node")
+
+        self.model = YOLO('/home/sadeep/mobile_receptionist_ws/src/button_localization/button_localization/button_detection_YOLO.pt')
+
+        self.sub_             = self.create_subscription(Image, '/zed2_left_camera/image_raw', self.camera_callback, 10)
+        self.img_pub_         = self.create_publisher(Image, '/inference_result', 1)
+
+        self.declare_parameter("target_button", "button-up")
+        self.target_button   = self.get_parameter("target_button").get_parameter_value().string_value
+
+
+    def camera_callback(self, msg):
+
+        img = bridge.imgmsg_to_cv2(msg, "bgr8")
+        results = self.model(img, conf=0.1)
+
+        for r in (results):
+            boxes = r.boxes
+            
+            for box in boxes:
+                b = box.xyxy[0].to('cpu').detach().numpy().copy()
+                c = box.cls
+
+                if (self.model.names[int(c)] == self.target_button):
+                
+                    x_min = int(b[0])  # Top-left x-coordinate
+                    y_min = int(b[1])  # Top-left y-coordinate
+                    x_max = int(b[2])  # Bottom-right x-coordinate
+                    y_max = int(b[3])  # Bottom-right y-coordinate
+
+                    # Draw rectangle
+                    cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (255, 255, 0), thickness=2)
+                    bb_class = self.model.names[int(c)]
+
+                    mid_point_x = int((x_min + x_max) / 2)
+                    mid_point_y = int((y_min + y_max) / 2)
+
+                    cv2.circle(img, (mid_point_x, mid_point_y), 5, (0, 0, 255), -1)
+
+                    # Draw label
+                    label = f'class: {bb_class} '
+                    cv2.putText(img, label, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 0), 2)
+
+                    break
+
+        img_msg = bridge.cv2_to_imgmsg(img)
+        self.img_pub_.publish(img_msg)
+
+
+    
 def main(args=None):
     rclpy.init(args=args)
 
     visualizer_node = VisualizerNode()
+    yolo_node       = YoloNode()
 
-    try:
-        rclpy.spin(visualizer_node)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        visualizer_node.destroy_node()
-        rclpy.shutdown()
+    executor  = MultiThreadedExecutor()
+    executor.add_node(visualizer_node)
+    executor.add_node(yolo_node)
+    executor.spin()
 
 if __name__ == "__main__":
     main()
