@@ -14,12 +14,12 @@ class CameraSubscriber(Node):
 
         self.model = YOLO('/home/sadeep/mobile_receptionist_ws/src/button_localization/button_localization/button_detection_YOLO.pt')
 
-        self.sub_ = self.create_subscription(Image, '/image_raw', self.camera_callback, 10)
+        self.sub_ = self.create_subscription(Image, '/zed2_left_camera/image_raw', self.camera_callback, 10)
         self.img_pub_ = self.create_publisher(Image, '/inference_result', 1)
 
     def camera_callback(self, msg):
         img = bridge.imgmsg_to_cv2(msg, "bgr8")
-        results = self.model(img)
+        results = self.model(img, conf=0.1)
 
         for r in (results):
             boxes = r.boxes
