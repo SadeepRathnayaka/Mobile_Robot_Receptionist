@@ -54,7 +54,6 @@ PosetoAngle::PosetoAngle() : Node("pose_to_angle_node"),
       }
 
       this->set_parameter(rclcpp::Parameter("start_joint_calculations", false));
-      this->set_parameter(rclcpp::Parameter("start_arm_control", true));
       rclcpp::shutdown();
       
     }
@@ -131,8 +130,9 @@ PosetoAngle::PosetoAngle() : Node("pose_to_angle_node"),
         else
         {
             RCLCPP_ERROR(rclcpp::get_logger("pose_to_angle"), "One or more planners failed!");
-            return{false, {}};
             rclcpp::shutdown();
+            return{false, {}};
+            
         }
   };
 
