@@ -1,0 +1,105 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="textured_box_world">
+    
+    <!-- Sunlight -->
+    <light name="sun" type="directional">
+      <cast_shadows>1</cast_shadows>
+      <pose>0 0 -10 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>0 0.5 -0.9</direction>
+    </light>
+    
+    <!-- Ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Textured box model -->
+    <model name="textured_box">
+      <static>true</static>
+      <pose>0.719 -0.355 1.099 -0.011 0.013 -1.568</pose> 
+      <link name="box_link">
+        <visual name="box_visual">
+          <geometry>
+            <box>
+              <size>0.15 0.01 0.7</size> 
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/pannel_out.material</uri>
+              <name>PannelOut</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+
+    <light name="elevator_panel_light" type="point">
+    <pose>0.564 -0.17 1.174 -0.011 0.013 -1.568</pose> 
+    <diffuse>1 1 1 1</diffuse> 
+    <specular>0.1 0.1 0.1 1</specular>
+    <attenuation>
+        <range>5.0</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+    </attenuation>
+    <cast_shadows>true</cast_shadows>
+    </light> 
+
+    <model name='aws_robomaker_residential_RoomWall_01'>
+      <link name='link'>
+        <inertial>
+          <mass>100</mass>
+        </inertial>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://aws_robomaker_residential_RoomWall_01/meshes/aws_RoomWall_01_collision.DAE</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://aws_robomaker_residential_RoomWall_01/meshes/aws_RoomWall_01_visual.DAE</uri>
+            </mesh>
+          </geometry>
+          <meta>
+            <layer>2</layer>
+          </meta>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <static>1</static>
+      <pose>0.6193 0.0859 0 0 0 1.571</pose>
+    </model>
+    
+  </world>
+</sdf>
