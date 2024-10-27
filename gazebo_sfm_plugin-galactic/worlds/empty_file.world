@@ -38,13 +38,17 @@
       <uri>model://ground_plane</uri>
     </include>
 
-    <model name='elevator_button_wall'>
+    <!-- <model name='elevator_button_wall'>
       <static>true</static>
       <include>
           <uri>model://elevator_button_wall</uri>
       </include>
       <pose frame=''>-2.396624 4.387607 0.502739 0 -0 0</pose>
-    </model>
+    </model> -->
+
+    
+
+    
 
 </world>
 </sdf>
