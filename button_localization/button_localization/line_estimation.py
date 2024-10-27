@@ -64,7 +64,6 @@ class LineEstimator(Node):
                 self.get_logger().info(" Starting the pose estimation process...")
 
                 self.set_parameters([rclpy.parameter.Parameter("start_line_estimation", rclpy.Parameter.Type.BOOL, False)])
-                self.set_parameters([rclpy.parameter.Parameter("start_pose_estimation",  rclpy.Parameter.Type.BOOL, True )])
 
         else:
             return
