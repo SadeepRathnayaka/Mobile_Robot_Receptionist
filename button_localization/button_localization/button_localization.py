@@ -58,7 +58,6 @@ class ButtonLocalization(Node):
         self.get_logger().info("Poses are successfully updated.")
 
         self.set_parameters([rclpy.parameter.Parameter("start_pose_estimation", rclpy.Parameter.Type.BOOL, False)])
-        self.set_parameters([rclpy.parameter.Parameter("start_joint_calculations", rclpy.Parameter.Type.BOOL, False)])
 
 
 def main(args=None):
