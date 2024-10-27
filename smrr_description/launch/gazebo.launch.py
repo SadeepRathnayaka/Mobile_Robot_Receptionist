@@ -43,7 +43,7 @@ def generate_launch_description():
                     ],
     )
 
-    gazebo_world = os.path.join(get_package_share_directory("gazebo_sfm_plugin"), "worlds", "wall.world")
+    gazebo_world = os.path.join(get_package_share_directory("gazebo_sfm_plugin"), "worlds", "button_pannel.world")
 
     start_gazebo_server = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
