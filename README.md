@@ -17,7 +17,6 @@ This project aims to develop a mobile robot receptionist capable of interacting 
 - Software: SolidWorks
 - Objective: Design a compact and efficient 4-DoF robotic arm capable of precise movements to interact with elevator buttons.
 
-- 
 
 https://github.com/user-attachments/assets/c5e8e2c5-e56a-4545-b5b4-3894bc700e37
 
