@@ -1,6 +1,4 @@
-[Screencast from 01-27-2025 02:17:09 AM.webm](https://github.com/user-attachments/assets/af951340-552c-4b01-a67b-c296d18a5b3f)# Mobile_Robot_Receptionist
- 
-## Robot-Elevator Interaction
+ ## Robot-Elevator Interaction
 
 This project aims to develop a mobile robot receptionist capable of interacting with its environment, including the ability to press elevator buttons autonomously. My role in this project focuses on **Robot-Elevator Interaction**, specifically designing and implementing a robotic arm for pressing elevator buttons.
 
@@ -47,6 +45,13 @@ https://github.com/user-attachments/assets/ba46da28-fc28-4cd7-97c0-60d0ff105ee1
 - Use **Button Localization Nodes** with a backward reverse perspective projection method to calculate the 3D pose of the button.
 - Integrate **Robot Arm Control** with ROS 2 and MoveIt for motion planning and control.
 - Test and validate the system in Gazebo simulated environment to ensure accurate button pressing.
+
+In the following video, the marker is considered as the button.
+
+https://github.com/user-attachments/assets/29467f63-522f-4bb4-88d2-43e3fa13fe7b
+
+
+
 
 ### 5. **Hardware Implementation**
 - Assemble and test the 4-DoF robotic arm with the mobile robot.
