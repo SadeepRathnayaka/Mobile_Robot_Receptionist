@@ -1,4 +1,4 @@
-# Mobile_Robot_Receptionist
+[Screencast from 01-27-2025 02:17:09 AM.webm](https://github.com/user-attachments/assets/af951340-552c-4b01-a67b-c296d18a5b3f)# Mobile_Robot_Receptionist
  
 ## Robot-Elevator Interaction
 
@@ -30,10 +30,17 @@ https://github.com/user-attachments/assets/c5e8e2c5-e56a-4545-b5b4-3894bc700e37
 - Publish and subscribe to topics for real-time communication.
 - Implement necessary drivers for seamless control.
 
+
+[Screencast from 01-27-2025 02:17:09 AM.webm](https://github.com/user-attachments/assets/6421cb6e-5523-4d52-842b-d70d335577a6)
+
 ### 3. **MoveIt Framework Integration**
 - Plan and execute motion trajectories for the robotic arm using MoveIt.
 - Ensure collision-free paths and smooth motion.
 - Test simulations in RViz before hardware deployment.
+
+
+https://github.com/user-attachments/assets/ba46da28-fc28-4cd7-97c0-60d0ff105ee1
+
 
 ### 4. **Simulation**
 - Implement **Button Detection Nodes** to identify elevator buttons.
