@@ -19,6 +19,12 @@ This project aims to develop a mobile robot receptionist capable of interacting 
 - Software: SolidWorks
 - Objective: Design a compact and efficient 4-DoF robotic arm capable of precise movements to interact with elevator buttons.
 
+- 
+
+https://github.com/user-attachments/assets/c5e8e2c5-e56a-4545-b5b4-3894bc700e37
+
+
+
 ### 2. **ROS 2 Integration**
 - Setup ROS 2 nodes to control and monitor the robotic arm.
 - Publish and subscribe to topics for real-time communication.
@@ -38,6 +44,10 @@ This project aims to develop a mobile robot receptionist capable of interacting 
 ### 5. **Hardware Implementation**
 - Assemble and test the 4-DoF robotic arm with the mobile robot.
 - Validate the system's performance by pressing elevator buttons in real-world scenarios.
+
+
+https://github.com/user-attachments/assets/29ea4b6a-248b-4f6b-83d9-3741f0d257d9
+
 
 ---
 
