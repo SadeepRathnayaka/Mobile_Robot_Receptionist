@@ -59,8 +59,8 @@ https://github.com/user-attachments/assets/49e7dda4-f1a1-42ac-9850-aa023777fc52
 ## Tools and Frameworks
 - **Design**: SolidWorks
 - **Middleware**: ROS 2
-- **Motion Planning**: MoveIt
-- **Simulation**: RViz
+- **Motion Planning**: MoveIt2
+- **Simulation**: Gazebo, RViz
 
 ---
 
