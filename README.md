@@ -2,7 +2,7 @@
 
 This project aims to develop a mobile robot receptionist capable of interacting with its environment, including the ability to press elevator buttons autonomously. My role in this project focuses on **Robot-Elevator Interaction**, specifically designing and implementing a robotic arm for pressing elevator buttons.
 
-## Project Goals
+## Robot-Elevator Interaction Section Goals
 1. Design a 4-degree-of-freedom (DoF) robotic arm.
 2. Integrate the robotic arm with the ROS 2 framework.
 3. Implement motion planning and control using the MoveIt framework.
