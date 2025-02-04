@@ -14,6 +14,13 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Entities.msg"
   "msg/InferenceResult.msg"
   "msg/Yolov10Inference.msg"
+  "msg/Buffer.msg"
+  "msg/DataElementFloat.msg"
+  "msg/DataElementInt.msg"
+  "msg/DataElementString.msg"
+  "msg/PrefVelocity.msg"
+  "msg/VelocityClassData.msg"
+  "action/NavigateToGoal.action"
   "action/ArmControlServer.action"
   DEPENDENCIES std_msgs geometry_msgs
  )

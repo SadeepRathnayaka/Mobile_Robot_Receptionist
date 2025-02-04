@@ -58,8 +58,8 @@ class ORCA():
         self.safety_space = 0
         self.neighbor_dist = 10
         self.max_neighbors = 10
-        self.time_horizon = 2.0
-        self.time_horizon_obst = 0.50
+        self.time_horizon = 3.0
+        self.time_horizon_obst = 2.5
         self.radius = 0.3
         self.max_speed = 1
         self.sim = None

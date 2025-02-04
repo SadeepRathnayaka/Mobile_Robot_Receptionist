@@ -3,23 +3,27 @@ import numpy                as np
 import matplotlib.pyplot    as plt
 from scipy.stats    import norm
 from rclpy.node     import Node
-from smrr_interfaces.msg import Entities
-
+from smrr_interfaces.msg import Entities, Buffer
+from visualization_msgs.msg import Marker, MarkerArray
+from builtin_interfaces.msg import Duration
+import colorsys
 
 class GoalPredictor(Node):
     def __init__(self):
         super().__init__('goal_predictor')
-        self.pos_subscription = self.create_subscription(
-            Entities,
-            '/object_tracker/laser_data_array',
-            self.predictor_callback,
-            10)
-        
-        self.pos_publisher  = self.create_publisher(Entities,'/pos', 10)
-        self.vel_publisher  = self.create_publisher(Entities,'/vel', 10)
-        self.goal_publisher = self.create_publisher(Entities,'/goals', 10)
 
-        self.pos_subscription  
+
+        # subscribe to the buffer topic
+        self.pos_subscription = self.create_subscription(Buffer, '/human_data_buffer/buffer', self.predictor_callback, 10)
+        
+        self.pos_publisher  = self.create_publisher(Entities,'/goal_predictor/pos', 10)
+        self.vel_publisher  = self.create_publisher(Entities,'/goal_predictor/vel', 10)
+        self.goal_publisher = self.create_publisher(Entities,'/goal_predictor/goals', 10)
+
+        self.human_goals = self.create_publisher(MarkerArray, '/goal_predictor/human_goals_marker', 10)
+        self.human_positions = self.create_publisher(MarkerArray, '/goal_predictor/human_positions_marker', 10)
+        self.human_velocities = self.create_publisher(MarkerArray, '/goal_predictor/human_velocity_marker', 10)
+
 
         self.pedestrian_pos = [] 
         self.pedestrian_vel = []
@@ -46,12 +50,30 @@ class GoalPredictor(Node):
         self.goals  = Entities()
 
     def predictor_callback(self, msg):
-        self.get_logger().info('I heard: "%d"' % msg.count)
-        self.agents          = msg   
-      
+
+        # extract agent positions from buffer
+        # 0th index of buffer same as 0th index of x_positions
+        xpositions_of_agents = []
+        ypositions_of_agents = []
+        xvelocities_of_agents = []
+        yvelocities_of_agents = []
+
+        for i in range(msg.agent_count):
+            xvelocities_of_agents.append(msg.x_velocities[i].float_data[-1]) # most recent data in the buffer
+            yvelocities_of_agents.append(msg.y_velocities[i].float_data[-1]) # most recent data in the buffer
+            xpositions_of_agents.append(msg.x_positions[i].float_data[-1]) # most recent data in the buffer
+            ypositions_of_agents.append(msg.y_positions[i].float_data[-1]) # most recent data in the buffer
+
+        # extract agent count from buffer 
+        self.agents.count    = msg.agent_count
+        self.agents.x        = xpositions_of_agents
+        self.agents.y        = ypositions_of_agents  
+        # extract x and y mean velocities for each agents
         self.vel.count       = self.agents.count
-        self.vel.x           = [0.0]*self.vel.count  
-        self.vel.y           = [0.0]*self.vel.count 
+        self.vel.x           = xvelocities_of_agents 
+        self.vel.y           = yvelocities_of_agents
+
+        
         
         self.goals.count     = self.agents.count
         self.goals.x         = [0.0]*self.vel.count  
@@ -76,8 +98,9 @@ class GoalPredictor(Node):
             for j in range(self.agents.count):
                 self.pedestrian_vel[j][:2*self.path_buffer-2] = self.pedestrian_vel[j][2:2*self.path_buffer] # Shifting velocity buffer
                 
-                self.vel.x[j] = ((self.pedestrian_pos[j][-2] + self.pedestrian_pos[j][-4]) - (self.pedestrian_pos[j][-6] + self.pedestrian_pos[j][-8]))/self.dt
-                self.vel.y[j] = ((self.pedestrian_pos[j][-1] + self.pedestrian_pos[j][-3]) - (self.pedestrian_pos[j][-5] + self.pedestrian_pos[j][-7]))/self.dt  # Velocity calculation
+                # commented
+                #self.vel.x[j] = ((self.pedestrian_pos[j][-2] + self.pedestrian_pos[j][-4]) - (self.pedestrian_pos[j][-6] + self.pedestrian_pos[j][-8]))/self.dt
+                #self.vel.y[j] = ((self.pedestrian_pos[j][-1] + self.pedestrian_pos[j][-3]) - (self.pedestrian_pos[j][-5] + self.pedestrian_pos[j][-7]))/self.dt  # Velocity calculation
                 
                 self.pedestrian_vel[j][2*self.path_buffer-2:] = [self.vel.x[j], self.vel.y[j]]
 
@@ -134,26 +157,191 @@ class GoalPredictor(Node):
             self.goals.x[k] = D[np.argmax(destination_probs)][0]
             self.goals.y[k] = D[np.argmax(destination_probs)][1]
 
+        self.publish_goal_marker()
+        self.publish_position_marker()
+        self.publish_velocity_marker()
+
         return self.goals
         #return D[np.argmax(destination_probs)], destination_probs
 
     def predict_goals(self):
         ######################################### For visualization  ###################################################
-        agent_num = 1 
-        pos, vel = self.pedestrian_state(timeStep=0, pd = agent_num )
-        plt.clf()  
-        plt.quiver(pos[0], pos[1], vel[0], vel[1], color='r', scale=8)  # Pedestrian velocity
-        plt.scatter(self.destinations[:, 0], self.destinations[:, 1], c='blue', label='Destinations' , s= 50)
+        # agent_num = 5 
+        # pos, vel = self.pedestrian_state(timeStep=0, pd = agent_num )
+        # plt.clf()  
+        # plt.quiver(pos[0], pos[1], vel[0], vel[1], color='r', scale=8)  # Pedestrian velocity
+        # plt.scatter(self.destinations[:, 0], self.destinations[:, 1], c='blue', label='Destinations' , s= 50)
         
         pred_dest = self.predict_destination(self.destinations)
 
         ######################################### For visualization  ###################################################
 
-        plt.scatter(pred_dest.x[agent_num], pred_dest.y[agent_num], c='green', label='Predicted Destination', marker='X' , s= 200)
-        plt.legend()
-        plt.draw()  
-        plt.pause(0.01)  
+        # plt.scatter(pred_dest.x[agent_num], pred_dest.y[agent_num], c='green', label='Predicted Destination', marker='X' , s= 200)
+        # plt.legend()
+        # plt.draw()  
+        # plt.pause(0.01)  
 
+    def publish_goal_marker(self):
+        marker_array = MarkerArray()  
+        count = len(self.goals.x)
+        x_pos  = self.goals.x
+        y_pos = self.goals.y
+
+        colors = [
+            (1.0, 0.0, 0.0),  # Red
+            (0.0, 1.0, 0.0),  # Green
+            (0.0, 0.0, 1.0),  # Blue
+            (1.0, 1.0, 0.0),  # Yellow
+            (0.0, 1.0, 1.0),  # Cyan
+            (1.0, 0.0, 1.0),  # Magenta
+            (0.5, 0.5, 0.5),  # Grey
+            (1.0, 0.5, 0.0),  # Orange
+            (0.5, 0.0, 1.0),  # Purple
+            (0.0, 0.5, 1.0),  # Light Blue
+        ]
+
+        for human_id in range(count):
+            marker = Marker()
+            marker.header.frame_id = "map"
+            marker.header.stamp = self.get_clock().now().to_msg()
+            marker.ns = "human_goals"
+            marker.id = human_id
+            marker.type = Marker.CUBE
+            marker.action = Marker.ADD
+            marker.pose.position.x = x_pos[human_id]# x position
+            marker.pose.position.y = y_pos[human_id]# y position
+            marker.pose.position.z = 0.0  # z position (assumed flat plane)
+            marker.scale.x = 0.2  # Sphere size in x
+            marker.scale.y = 0.2  # Sphere size in y
+            marker.scale.z = 0.01 # Sphere size in z
+            marker.color.a = 1.0  # Transparency
+            color = colors[human_id % len(colors)]
+            marker.color.r = color[0]
+            marker.color.g = color[1]
+            marker.color.b = color[2]
+
+            # Set lifetime of the marker
+            marker.lifetime = Duration(sec=1, nanosec=0)  # Marker lasts for 1 second
+            marker_array.markers.append(marker)
+        self.human_goals.publish(marker_array)
+
+
+    def publish_position_marker(self):
+        marker_array = MarkerArray()  
+        count = len(self.agents.x)
+        x_pos = self.agents.x
+        y_pos = self.agents.y
+
+        # Predefined color palette
+        colors = [
+            (1.0, 0.0, 0.0),  # Red
+            (0.0, 1.0, 0.0),  # Green
+            (0.0, 0.0, 1.0),  # Blue
+            (1.0, 1.0, 0.0),  # Yellow
+            (0.0, 1.0, 1.0),  # Cyan
+            (1.0, 0.0, 1.0),  # Magenta
+            (0.5, 0.5, 0.5),  # Grey
+            (1.0, 0.5, 0.0),  # Orange
+            (0.5, 0.0, 1.0),  # Purple
+            (0.0, 0.5, 1.0),  # Light Blue
+        ]
+
+        for human_id in range(count):
+            marker = Marker()
+            marker.header.frame_id = "map"
+            marker.header.stamp = self.get_clock().now().to_msg()
+            marker.ns = "human_positions"
+            marker.id = human_id
+            marker.type = Marker.CYLINDER
+            marker.action = Marker.ADD
+            marker.pose.position.x = x_pos[human_id]  # x position
+            marker.pose.position.y = y_pos[human_id]  # y position
+            marker.pose.position.z = 0.0  # z position (assumed flat plane)
+            marker.scale.x = 0.2  # Sphere size in x
+            marker.scale.y = 0.2  # Sphere size in y
+            marker.scale.z = 0.01  # Sphere size in z
+            marker.color.a = 1.0  # Transparency
+
+            # Assign color from palette or cycle through it
+            color = colors[human_id % len(colors)]
+            marker.color.r = color[0]
+            marker.color.g = color[1]
+            marker.color.b = color[2]
+
+            # Set lifetime of the marker
+            marker.lifetime = Duration(sec=1, nanosec=0)  # Marker lasts for 1 second
+            marker_array.markers.append(marker)
+
+        self.human_positions.publish(marker_array)
+    
+    
+    def publish_velocity_marker(self):
+
+        marker_array = MarkerArray()  
+        count = len(self.agents.x)
+        x_pos  = self.agents.x
+        y_pos = self.agents.y
+        x_vel = self.vel.x
+        y_vel = self.vel.y
+
+        colors = [
+        (1.0, 0.0, 0.0),  # Red
+        (0.0, 1.0, 0.0),  # Green
+        (0.0, 0.0, 1.0),  # Blue
+        (1.0, 1.0, 0.0),  # Yellow
+        (0.0, 1.0, 1.0),  # Cyan
+        (1.0, 0.0, 1.0),  # Magenta
+        (0.5, 0.5, 0.5),  # Grey
+        (1.0, 0.5, 0.0),  # Orange
+        (0.5, 0.0, 1.0),  # Purple
+        (0.0, 0.5, 1.0),  # Light Blue
+    ]
+
+        for human_id in range(count):
+            marker = Marker()
+            marker.header.frame_id = "map"
+            marker.header.stamp = self.get_clock().now().to_msg()
+            marker.ns = "human_velocities"
+            marker.id = human_id
+            marker.type = Marker.ARROW  # Change to arrow
+            marker.action = Marker.ADD
+
+            # Set the starting point of the arrow (human position)
+            marker.pose.position.x = x_pos[human_id]  # x position
+            marker.pose.position.y = y_pos[human_id] # y position
+            marker.pose.position.z = 0.0  # z position (assumed flat plane)
+
+            # Calculate the orientation of the arrow from velocity components
+            vx, vy = x_vel[human_id], y_vel[human_id]  # Extract velocities from state
+            velocity_magnitude = (vx**2 + vy**2)**0.5
+            theta = np.arctan2(vy,vx)
+
+            if velocity_magnitude > 0:
+                marker.pose.orientation.x = 0.0
+                marker.pose.orientation.y = 0.0
+                marker.pose.orientation.z = np.sin(theta/2)
+                marker.pose.orientation.w = np.cos(theta/2)
+            else:
+                marker.pose.orientation.w = 1.0  # Default orientation
+
+            # Scale the arrow: length proportional to velocity magnitude
+            marker.scale.x = velocity_magnitude # Arrow length
+            marker.scale.y = 0.05  # Arrow thickness
+            marker.scale.z = 0.01 # Arrow thickness
+
+            # Set the color of the arrow
+            marker.color.a = 1.0  # Transparency
+            color = colors[human_id % len(colors)]
+            marker.color.r = color[0]
+            marker.color.g = color[1]
+            marker.color.b = color[2]
+
+            # Set lifetime of the marker
+            marker.lifetime = Duration(sec=1, nanosec=0)  # Marker lasts for 1 second
+
+            marker_array.markers.append(marker)
+
+        self.human_velocities.publish(marker_array)
 
 def main(args=None):
     rclpy.init(args=args)

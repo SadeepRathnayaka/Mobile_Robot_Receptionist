@@ -13,15 +13,16 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='sithija',
-    maintainer_email='sithija.vihanga28@gmail.com',
+    maintainer='ishara',
+    maintainer_email='isharadilshanra11@gmail.com',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-                'crowd_flow_publisher = goal_predictor.crowd_flow_publisher:main',
-                'goal_predictor = goal_predictor.goal_predictor:main',
+            'crowd_flow_publisher = goal_predictor.crowd_flow_publisher:main',
+            'goal_predictor = goal_predictor.goal_predictor:main',
+            'goal_pedictor_prev = goal_predictor.goal_predictor_prev:main',
         ],
-        },
+    },
 )
