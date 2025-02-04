@@ -4,9 +4,8 @@ from std_msgs.msg import Float32MultiArray
 import yaml
 
 class LineEstimationUtils():
-    def __init__(self, node, button_info_pub_):
+    def __init__(self, node):
         self.node             = node
-        self.button_info_pub_ = button_info_pub_
 
     def point_extractor(self, lidar_data_msg, start_angle, end_angle):
 
