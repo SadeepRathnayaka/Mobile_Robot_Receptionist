@@ -12,7 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'launch'), glob('launch/visualization.launch.py'))
+        (os.path.join('share', package_name, 'launch'), glob('launch/visualization.launch.py')),
+        (os.path.join('share', package_name, 'launch'), glob('launch/button_localization.launch.py'))
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -27,7 +28,8 @@ setup(
             'button_localization = button_localization.button_localization:main',
             'button_detection    = button_localization.button_detection:main',
             'yolo_node           = button_localization.yolo_node:main' ,
-            'visualizer_node     = button_localization.visualizer_node:main'         
+            'visualizer_node     = button_localization.visualizer_node:main',   
+            'depth_cal           = button_localization.depth_cal:main'    
         ],
     },
 )
