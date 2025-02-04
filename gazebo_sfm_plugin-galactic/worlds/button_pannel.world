@@ -25,7 +25,7 @@
     <!-- Textured box model -->
     <model name="textured_box">
       <static>true</static>
-      <pose>0.719 -0.355 1.099 -0.011 0.013 -1.568</pose> 
+      <pose>0.537 -0.252 1.102 -0.011 -0.001 -1.567</pose> 
       <link name="box_link">
         <visual name="box_visual">
           <geometry>
@@ -45,7 +45,7 @@
 
 
     <light name="elevator_panel_light" type="point">
-    <pose>0.564 -0.17 1.174 -0.011 0.013 -1.568</pose> 
+    <pose>0.537 -0.252 1.102 -0.011 -0.001 -1.567</pose> 
     <diffuse>1 1 1 1</diffuse> 
     <specular>0.1 0.1 0.1 1</specular>
     <attenuation>
