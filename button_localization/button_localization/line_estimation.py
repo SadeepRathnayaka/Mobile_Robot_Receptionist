@@ -20,7 +20,6 @@ class LineEstimator(Node):
         self.offset           = 0.17 # Offset in meters (offset from lidar link to left camera link optical)
 
         self.laser_sub_       = self.create_subscription(LaserScan, '/scan', self.lidar_callback, 10)
-        self.button_info_pub_ = self.create_publisher(Float32MultiArray, '/button_localization/button_info', 1)
 
         self.gradient_buffer  = np.array([])
         self.depth_buffer     = np.array([])
@@ -28,7 +27,7 @@ class LineEstimator(Node):
 
         self.yaml_path        = "/home/sadeep/mobile_receptionist_ws/src/button_localization/config/elevator_interaction.yaml"
 
-        self.line_estimation_utils = LineEstimationUtils(self,self.button_info_pub_)
+        self.line_estimation_utils = LineEstimationUtils(self)
 
         self.get_logger().info("Lidar processor node has been started")
 
