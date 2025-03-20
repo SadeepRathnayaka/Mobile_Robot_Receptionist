@@ -17,6 +17,7 @@ class LidarSubscriber(Node):
         self.cb_group      = ReentrantCallbackGroup()
         self.laser_sub_    = self.create_subscription(LaserScan, "/scan", self.lidar_callback, 10, callback_group=self.cb_group)
         self.laser_pub_    = self.create_publisher(Entities, "/object_tracker/laser_data_array", 10)
+        self.stat_obs_pub_ = self.create_publisher(Entities, "/object_tracker/static_data_array", 10)
         self.transform     = GeometricTransformations(self)
 
         self.get_logger().info("Lidar subscriber node has been started")
@@ -79,6 +80,7 @@ class LidarSubscriber(Node):
                 distances        = np.linalg.norm(lidar_data_np - np.array(visual_point[:2], dtype=float), axis=1)
                 min_distance     = np.min(distances)
 
+                # add a new entity if there is no object within the range
                 if min_distance > threshold:
                     new_lidar_data.append(visual_point.tolist())
 
@@ -93,32 +95,58 @@ class LidarSubscriber(Node):
             lidar_data_xy   = lidar_data[:, :2]
             lidar_data_xy   = np.array(lidar_data_xy, dtype=float)
 
+            # Define the human exclusion radius
+            human_radius = 0.75  
+
+            if lidar_data_xy.shape[0] == 0:  # No human data available
+                static_obstacle_points = lidar_points  # Keep all LiDAR points as static obstacles
+            else:
+                # Compute distances of all LiDAR points to each human position
+                distances_ = np.linalg.norm(lidar_points[:, None, :] - lidar_data_xy[None, :, :], axis=2)
+
+                # Find the minimum distance from each lidar point to any human
+                min_distances = np.min(distances_, axis=1)
+
+                # Select points that are outside the human radius
+                static_obstacle_mask = min_distances > human_radius
+                static_obstacle_points = lidar_points[static_obstacle_mask]
+
             # transform the lidar data to the map frame
             transformation = self.transform.get_transform("map", "rplidar_link")
             obs_arr        = np.hstack((lidar_data_xy[:,0], lidar_data_xy[:,1], np.zeros_like(lidar_data_xy[:,0]), np.ones_like(lidar_data_xy[:,0]))).reshape(4,-1)
+            static_obs_arr = np.hstack((static_obstacle_points[:,0],static_obstacle_points[:,1], np.zeros_like(static_obstacle_points[:,0]), np.ones_like(static_obstacle_points[:,0]))).reshape(4,-1)
 
             if transformation is not None:
-                transformed_points      = self.transform.transform_points(obs_arr, transformation)
-                transformed_lidar_data  = transformed_points.T
+                transformed_lidar_data_      = self.transform.transform_points(obs_arr, transformation)
+                transformed_static_points_   = self.transform.transform_points(static_obs_arr, transformation)
+                transformed_lidar_data       = transformed_lidar_data_.T
+                transformed_static_points    = transformed_static_points_.T
 
             transformed_lidar_data  = np.array(transformed_lidar_data)
+            transformed_static_points = np.array(transformed_static_points)
             
             entities          = Entities()
             entities.count    = len(lidar_data)
-
             arr_classes       = lidar_data[:, 2]
             arr_classes       = np.array(arr_classes, dtype=str)
             entities.classes  = arr_classes.tolist()
-
             arr_x             = transformed_lidar_data[:, 0]
             arr_x             = np.array(arr_x, dtype=float)
             entities.x        = arr_x.tolist()
-
             arr_y             = transformed_lidar_data[:, 1]
             arr_y             = np.array(arr_y, dtype=float)
             entities.y        = arr_y.tolist()
 
+            entities_2        = Entities()
+            arr_x             = transformed_static_points[:, 0]
+            arr_x             = np.array(arr_x, dtype=float)
+            entities_2.x      = arr_x.tolist()
+            arr_y             = transformed_static_points[:, 1]
+            arr_y             = np.array(arr_y, dtype=float)
+            entities_2.y      = arr_y.tolist()
+
             self.laser_pub_.publish(entities)
+            self.stat_obs_pub_.publish(entities_2)
   
 
 class VisualDataSubscriber(Node):
