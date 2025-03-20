@@ -4,7 +4,8 @@
 
   <xacro:property name="PI" value="3.14159265359" />
 
-  <xacro:include filename="$(find smrr_description)/urdf/camera.urdf" />
+  <xacro:include filename="$(find smrr_description)/urdf/camera_.urdf" />
+  <xacro:include filename="$(find smrr_description)/urdf/realsense_camera_gazebo.urdf" />
   <xacro:include filename="$(find smrr_description)/urdf/lidar.urdf" />
   <xacro:include filename="$(find smrr_description)/urdf/transmission.urdf" />
   <xacro:include filename="$(find smrr_description)/urdf/gazebo_ros2_control.urdf" /> 

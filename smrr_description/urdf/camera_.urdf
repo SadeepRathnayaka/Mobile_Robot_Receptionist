@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Camera joints and Links -->
+    <link name="camera_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="${PI} ${-PI/2} 0"/>
+            <geometry>
+                <mesh filename="package://smrr_description/meshes/d435_with_cam_stand.stl"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://smrr_description/meshes/d435_with_cam_stand.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="camera_joint" type="fixed">
+        <origin xyz="0.1 0 1.05" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="camera_link"/>
+    </joint>
+
+
+    <link name="camera_link_"></link>
+
+    <joint name="camera_link_joint" type="fixed">
+        <parent link="camera_link" />
+        <child link="camera_link_" />
+        <origin xyz="0.06746 -0.0175 0.0237" rpy="${PI} ${-PI/2} 0" />
+      </joint>
+
+    <link name="camera_depth_frame"></link>
+
+    <joint name="camera_depth_joint" type="fixed">
+        <parent link="camera_link" />
+        <child link="camera_depth_frame" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+    <link name="camera_depth_optical_frame"></link>
+
+    <joint name="camera_depth_optical_joint" type="fixed">
+        <parent link="camera_depth_frame" />
+        <child link="camera_depth_optical_frame" />
+        <origin xyz="0 0 0" rpy="${-PI/2} 0 ${-PI/2}" />
+    </joint>
+
+    <link name="camera_color_frame"></link>
+
+    <joint name="camera_color_joint" type="fixed">
+        <parent link="camera_link" />
+        <child link="camera_color_frame" />
+        <origin xyz="0 0.015 0" rpy="0 0 0" />
+    </joint>
+
+    <link name="camera_color_optical_frame"></link>
+
+    <joint name="camera_color_optical_joint" type="fixed">
+        <parent link="camera_color_frame" />
+        <child link="camera_color_optical_frame" />
+        <origin xyz="0 0 0" rpy="${-PI/2} 0 ${-PI/2}" />
+    </joint>
+
+    <link name="camera_left_ir_frame"></link>
+
+    <joint name="camera_left_ir_joint" type="fixed">
+        <parent link="camera_link" />
+        <child link="camera_left_ir_frame" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+    <link name="camera_left_ir_optical_frame"></link>
+
+    <joint name="camera_left_ir_optical_joint" type="fixed">
+        <parent link="camera_left_ir_frame" />
+        <child link="camera_left_ir_optical_frame" />
+        <origin xyz="0 0 0" rpy="${-PI/2} 0 ${-PI/2}" />
+    </joint>
+
+
+    <link name="camera_right_ir_frame"></link>
+
+    <joint name="camera_right_ir_joint" type="fixed">
+        <parent link="camera_link" />
+        <child link="camera_right_ir_frame" />
+        <origin xyz="0 -0.050 0" rpy="0 0 0" />
+    </joint>
+
+    <link name="camera_right_ir_optical_frame"></link>
+
+    <joint name="camera_right_ir_optical_joint" type="fixed">
+        <parent link="camera_right_ir_frame" />
+        <child link="camera_right_ir_optical_frame" />
+        <origin xyz="0 0 0" rpy="${-PI/2} 0 ${-PI/2}" />
+    </joint>
+
+</robot>

@@ -130,7 +130,7 @@
             <camera name="zed2_left">
                 <horizontal_fov>1.7633</horizontal_fov>
                 <image>
-                    <format>R8G8B8</format>
+                    <!-- <format>R8G8B8</format> -->
                     <width>1280</width>
                     <height>720</height>
                 </image>
@@ -141,7 +141,7 @@
                 <noise>
                     <type>gaussian</type>
                     <mean>0.0</mean>
-                    <stddev>0.007</stddev>
+                    <stddev>0.1</stddev>
                 </noise>
             </camera>
             <plugin name="depth_camera_controller" filename="libgazebo_ros_camera.so">
