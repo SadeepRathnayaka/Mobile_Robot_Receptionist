@@ -1,0 +1,1 @@
+/home/sadeep/mobile_receptionist_ws/src/build/smrr_interfaces/rosidl_generator_c/smrr_interfaces/action/detail/navigate_to_goal__type_support.h

@@ -1,0 +1,1154 @@
+// generated from rosidl_typesupport_cpp/resource/idl__type_support.cpp.em
+// with input from smrr_interfaces:action/NavigateToGoal.idl
+// generated code does not contain a copyright notice
+
+#include "cstddef"
+#include "rosidl_runtime_c/message_type_support_struct.h"
+#include "smrr_interfaces/action/detail/navigate_to_goal__struct.hpp"
+#include "rosidl_typesupport_cpp/identifier.hpp"
+#include "rosidl_typesupport_cpp/message_type_support.hpp"
+#include "rosidl_typesupport_c/type_support_map.h"
+#include "rosidl_typesupport_cpp/message_type_support_dispatch.hpp"
+#include "rosidl_typesupport_cpp/visibility_control.h"
+#include "rosidl_typesupport_interface/macros.h"
+
+namespace smrr_interfaces
+{
+
+namespace action
+{
+
+namespace rosidl_typesupport_cpp
+{
+
+typedef struct _NavigateToGoal_Goal_type_support_ids_t
+{
+  const char * typesupport_identifier[2];
+} _NavigateToGoal_Goal_type_support_ids_t;
+
+static const _NavigateToGoal_Goal_type_support_ids_t _NavigateToGoal_Goal_message_typesupport_ids = {
+  {
+    "rosidl_typesupport_fastrtps_cpp",  // ::rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
+    "rosidl_typesupport_introspection_cpp",  // ::rosidl_typesupport_introspection_cpp::typesupport_identifier,
+  }
+};
+
+typedef struct _NavigateToGoal_Goal_type_support_symbol_names_t
+{
+  const char * symbol_name[2];
+} _NavigateToGoal_Goal_type_support_symbol_names_t;
+
+#define STRINGIFY_(s) #s
+#define STRINGIFY(s) STRINGIFY_(s)
+
+static const _NavigateToGoal_Goal_type_support_symbol_names_t _NavigateToGoal_Goal_message_typesupport_symbol_names = {
+  {
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, smrr_interfaces, action, NavigateToGoal_Goal)),
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_cpp, smrr_interfaces, action, NavigateToGoal_Goal)),
+  }
+};
+
+typedef struct _NavigateToGoal_Goal_type_support_data_t
+{
+  void * data[2];
+} _NavigateToGoal_Goal_type_support_data_t;
+
+static _NavigateToGoal_Goal_type_support_data_t _NavigateToGoal_Goal_message_typesupport_data = {
+  {
+    0,  // will store the shared library later
+    0,  // will store the shared library later
+  }
+};
+
+static const type_support_map_t _NavigateToGoal_Goal_message_typesupport_map = {
+  2,
+  "smrr_interfaces",
+  &_NavigateToGoal_Goal_message_typesupport_ids.typesupport_identifier[0],
+  &_NavigateToGoal_Goal_message_typesupport_symbol_names.symbol_name[0],
+  &_NavigateToGoal_Goal_message_typesupport_data.data[0],
+};
+
+static const rosidl_message_type_support_t NavigateToGoal_Goal_message_type_support_handle = {
+  ::rosidl_typesupport_cpp::typesupport_identifier,
+  reinterpret_cast<const type_support_map_t *>(&_NavigateToGoal_Goal_message_typesupport_map),
+  ::rosidl_typesupport_cpp::get_message_typesupport_handle_function,
+};
+
+}  // namespace rosidl_typesupport_cpp
+
+}  // namespace action
+
+}  // namespace smrr_interfaces
+
+namespace rosidl_typesupport_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_Goal>()
+{
+  return &::smrr_interfaces::action::rosidl_typesupport_cpp::NavigateToGoal_Goal_message_type_support_handle;
+}
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_cpp, smrr_interfaces, action, NavigateToGoal_Goal)() {
+  return get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_Goal>();
+}
+
+#ifdef __cplusplus
+}
+#endif
+}  // namespace rosidl_typesupport_cpp
+
+// already included above
+// #include "cstddef"
+// already included above
+// #include "rosidl_runtime_c/message_type_support_struct.h"
+// already included above
+// #include "smrr_interfaces/action/detail/navigate_to_goal__struct.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/identifier.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support.hpp"
+// already included above
+// #include "rosidl_typesupport_c/type_support_map.h"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support_dispatch.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/visibility_control.h"
+// already included above
+// #include "rosidl_typesupport_interface/macros.h"
+
+namespace smrr_interfaces
+{
+
+namespace action
+{
+
+namespace rosidl_typesupport_cpp
+{
+
+typedef struct _NavigateToGoal_Result_type_support_ids_t
+{
+  const char * typesupport_identifier[2];
+} _NavigateToGoal_Result_type_support_ids_t;
+
+static const _NavigateToGoal_Result_type_support_ids_t _NavigateToGoal_Result_message_typesupport_ids = {
+  {
+    "rosidl_typesupport_fastrtps_cpp",  // ::rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
+    "rosidl_typesupport_introspection_cpp",  // ::rosidl_typesupport_introspection_cpp::typesupport_identifier,
+  }
+};
+
+typedef struct _NavigateToGoal_Result_type_support_symbol_names_t
+{
+  const char * symbol_name[2];
+} _NavigateToGoal_Result_type_support_symbol_names_t;
+
+#define STRINGIFY_(s) #s
+#define STRINGIFY(s) STRINGIFY_(s)
+
+static const _NavigateToGoal_Result_type_support_symbol_names_t _NavigateToGoal_Result_message_typesupport_symbol_names = {
+  {
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, smrr_interfaces, action, NavigateToGoal_Result)),
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_cpp, smrr_interfaces, action, NavigateToGoal_Result)),
+  }
+};
+
+typedef struct _NavigateToGoal_Result_type_support_data_t
+{
+  void * data[2];
+} _NavigateToGoal_Result_type_support_data_t;
+
+static _NavigateToGoal_Result_type_support_data_t _NavigateToGoal_Result_message_typesupport_data = {
+  {
+    0,  // will store the shared library later
+    0,  // will store the shared library later
+  }
+};
+
+static const type_support_map_t _NavigateToGoal_Result_message_typesupport_map = {
+  2,
+  "smrr_interfaces",
+  &_NavigateToGoal_Result_message_typesupport_ids.typesupport_identifier[0],
+  &_NavigateToGoal_Result_message_typesupport_symbol_names.symbol_name[0],
+  &_NavigateToGoal_Result_message_typesupport_data.data[0],
+};
+
+static const rosidl_message_type_support_t NavigateToGoal_Result_message_type_support_handle = {
+  ::rosidl_typesupport_cpp::typesupport_identifier,
+  reinterpret_cast<const type_support_map_t *>(&_NavigateToGoal_Result_message_typesupport_map),
+  ::rosidl_typesupport_cpp::get_message_typesupport_handle_function,
+};
+
+}  // namespace rosidl_typesupport_cpp
+
+}  // namespace action
+
+}  // namespace smrr_interfaces
+
+namespace rosidl_typesupport_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_Result>()
+{
+  return &::smrr_interfaces::action::rosidl_typesupport_cpp::NavigateToGoal_Result_message_type_support_handle;
+}
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_cpp, smrr_interfaces, action, NavigateToGoal_Result)() {
+  return get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_Result>();
+}
+
+#ifdef __cplusplus
+}
+#endif
+}  // namespace rosidl_typesupport_cpp
+
+// already included above
+// #include "cstddef"
+// already included above
+// #include "rosidl_runtime_c/message_type_support_struct.h"
+// already included above
+// #include "smrr_interfaces/action/detail/navigate_to_goal__struct.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/identifier.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support.hpp"
+// already included above
+// #include "rosidl_typesupport_c/type_support_map.h"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support_dispatch.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/visibility_control.h"
+// already included above
+// #include "rosidl_typesupport_interface/macros.h"
+
+namespace smrr_interfaces
+{
+
+namespace action
+{
+
+namespace rosidl_typesupport_cpp
+{
+
+typedef struct _NavigateToGoal_Feedback_type_support_ids_t
+{
+  const char * typesupport_identifier[2];
+} _NavigateToGoal_Feedback_type_support_ids_t;
+
+static const _NavigateToGoal_Feedback_type_support_ids_t _NavigateToGoal_Feedback_message_typesupport_ids = {
+  {
+    "rosidl_typesupport_fastrtps_cpp",  // ::rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
+    "rosidl_typesupport_introspection_cpp",  // ::rosidl_typesupport_introspection_cpp::typesupport_identifier,
+  }
+};
+
+typedef struct _NavigateToGoal_Feedback_type_support_symbol_names_t
+{
+  const char * symbol_name[2];
+} _NavigateToGoal_Feedback_type_support_symbol_names_t;
+
+#define STRINGIFY_(s) #s
+#define STRINGIFY(s) STRINGIFY_(s)
+
+static const _NavigateToGoal_Feedback_type_support_symbol_names_t _NavigateToGoal_Feedback_message_typesupport_symbol_names = {
+  {
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, smrr_interfaces, action, NavigateToGoal_Feedback)),
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_cpp, smrr_interfaces, action, NavigateToGoal_Feedback)),
+  }
+};
+
+typedef struct _NavigateToGoal_Feedback_type_support_data_t
+{
+  void * data[2];
+} _NavigateToGoal_Feedback_type_support_data_t;
+
+static _NavigateToGoal_Feedback_type_support_data_t _NavigateToGoal_Feedback_message_typesupport_data = {
+  {
+    0,  // will store the shared library later
+    0,  // will store the shared library later
+  }
+};
+
+static const type_support_map_t _NavigateToGoal_Feedback_message_typesupport_map = {
+  2,
+  "smrr_interfaces",
+  &_NavigateToGoal_Feedback_message_typesupport_ids.typesupport_identifier[0],
+  &_NavigateToGoal_Feedback_message_typesupport_symbol_names.symbol_name[0],
+  &_NavigateToGoal_Feedback_message_typesupport_data.data[0],
+};
+
+static const rosidl_message_type_support_t NavigateToGoal_Feedback_message_type_support_handle = {
+  ::rosidl_typesupport_cpp::typesupport_identifier,
+  reinterpret_cast<const type_support_map_t *>(&_NavigateToGoal_Feedback_message_typesupport_map),
+  ::rosidl_typesupport_cpp::get_message_typesupport_handle_function,
+};
+
+}  // namespace rosidl_typesupport_cpp
+
+}  // namespace action
+
+}  // namespace smrr_interfaces
+
+namespace rosidl_typesupport_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_Feedback>()
+{
+  return &::smrr_interfaces::action::rosidl_typesupport_cpp::NavigateToGoal_Feedback_message_type_support_handle;
+}
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_cpp, smrr_interfaces, action, NavigateToGoal_Feedback)() {
+  return get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_Feedback>();
+}
+
+#ifdef __cplusplus
+}
+#endif
+}  // namespace rosidl_typesupport_cpp
+
+// already included above
+// #include "cstddef"
+// already included above
+// #include "rosidl_runtime_c/message_type_support_struct.h"
+// already included above
+// #include "smrr_interfaces/action/detail/navigate_to_goal__struct.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/identifier.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support.hpp"
+// already included above
+// #include "rosidl_typesupport_c/type_support_map.h"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support_dispatch.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/visibility_control.h"
+// already included above
+// #include "rosidl_typesupport_interface/macros.h"
+
+namespace smrr_interfaces
+{
+
+namespace action
+{
+
+namespace rosidl_typesupport_cpp
+{
+
+typedef struct _NavigateToGoal_SendGoal_Request_type_support_ids_t
+{
+  const char * typesupport_identifier[2];
+} _NavigateToGoal_SendGoal_Request_type_support_ids_t;
+
+static const _NavigateToGoal_SendGoal_Request_type_support_ids_t _NavigateToGoal_SendGoal_Request_message_typesupport_ids = {
+  {
+    "rosidl_typesupport_fastrtps_cpp",  // ::rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
+    "rosidl_typesupport_introspection_cpp",  // ::rosidl_typesupport_introspection_cpp::typesupport_identifier,
+  }
+};
+
+typedef struct _NavigateToGoal_SendGoal_Request_type_support_symbol_names_t
+{
+  const char * symbol_name[2];
+} _NavigateToGoal_SendGoal_Request_type_support_symbol_names_t;
+
+#define STRINGIFY_(s) #s
+#define STRINGIFY(s) STRINGIFY_(s)
+
+static const _NavigateToGoal_SendGoal_Request_type_support_symbol_names_t _NavigateToGoal_SendGoal_Request_message_typesupport_symbol_names = {
+  {
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, smrr_interfaces, action, NavigateToGoal_SendGoal_Request)),
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_cpp, smrr_interfaces, action, NavigateToGoal_SendGoal_Request)),
+  }
+};
+
+typedef struct _NavigateToGoal_SendGoal_Request_type_support_data_t
+{
+  void * data[2];
+} _NavigateToGoal_SendGoal_Request_type_support_data_t;
+
+static _NavigateToGoal_SendGoal_Request_type_support_data_t _NavigateToGoal_SendGoal_Request_message_typesupport_data = {
+  {
+    0,  // will store the shared library later
+    0,  // will store the shared library later
+  }
+};
+
+static const type_support_map_t _NavigateToGoal_SendGoal_Request_message_typesupport_map = {
+  2,
+  "smrr_interfaces",
+  &_NavigateToGoal_SendGoal_Request_message_typesupport_ids.typesupport_identifier[0],
+  &_NavigateToGoal_SendGoal_Request_message_typesupport_symbol_names.symbol_name[0],
+  &_NavigateToGoal_SendGoal_Request_message_typesupport_data.data[0],
+};
+
+static const rosidl_message_type_support_t NavigateToGoal_SendGoal_Request_message_type_support_handle = {
+  ::rosidl_typesupport_cpp::typesupport_identifier,
+  reinterpret_cast<const type_support_map_t *>(&_NavigateToGoal_SendGoal_Request_message_typesupport_map),
+  ::rosidl_typesupport_cpp::get_message_typesupport_handle_function,
+};
+
+}  // namespace rosidl_typesupport_cpp
+
+}  // namespace action
+
+}  // namespace smrr_interfaces
+
+namespace rosidl_typesupport_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_SendGoal_Request>()
+{
+  return &::smrr_interfaces::action::rosidl_typesupport_cpp::NavigateToGoal_SendGoal_Request_message_type_support_handle;
+}
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_cpp, smrr_interfaces, action, NavigateToGoal_SendGoal_Request)() {
+  return get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_SendGoal_Request>();
+}
+
+#ifdef __cplusplus
+}
+#endif
+}  // namespace rosidl_typesupport_cpp
+
+// already included above
+// #include "cstddef"
+// already included above
+// #include "rosidl_runtime_c/message_type_support_struct.h"
+// already included above
+// #include "smrr_interfaces/action/detail/navigate_to_goal__struct.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/identifier.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support.hpp"
+// already included above
+// #include "rosidl_typesupport_c/type_support_map.h"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support_dispatch.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/visibility_control.h"
+// already included above
+// #include "rosidl_typesupport_interface/macros.h"
+
+namespace smrr_interfaces
+{
+
+namespace action
+{
+
+namespace rosidl_typesupport_cpp
+{
+
+typedef struct _NavigateToGoal_SendGoal_Response_type_support_ids_t
+{
+  const char * typesupport_identifier[2];
+} _NavigateToGoal_SendGoal_Response_type_support_ids_t;
+
+static const _NavigateToGoal_SendGoal_Response_type_support_ids_t _NavigateToGoal_SendGoal_Response_message_typesupport_ids = {
+  {
+    "rosidl_typesupport_fastrtps_cpp",  // ::rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
+    "rosidl_typesupport_introspection_cpp",  // ::rosidl_typesupport_introspection_cpp::typesupport_identifier,
+  }
+};
+
+typedef struct _NavigateToGoal_SendGoal_Response_type_support_symbol_names_t
+{
+  const char * symbol_name[2];
+} _NavigateToGoal_SendGoal_Response_type_support_symbol_names_t;
+
+#define STRINGIFY_(s) #s
+#define STRINGIFY(s) STRINGIFY_(s)
+
+static const _NavigateToGoal_SendGoal_Response_type_support_symbol_names_t _NavigateToGoal_SendGoal_Response_message_typesupport_symbol_names = {
+  {
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, smrr_interfaces, action, NavigateToGoal_SendGoal_Response)),
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_cpp, smrr_interfaces, action, NavigateToGoal_SendGoal_Response)),
+  }
+};
+
+typedef struct _NavigateToGoal_SendGoal_Response_type_support_data_t
+{
+  void * data[2];
+} _NavigateToGoal_SendGoal_Response_type_support_data_t;
+
+static _NavigateToGoal_SendGoal_Response_type_support_data_t _NavigateToGoal_SendGoal_Response_message_typesupport_data = {
+  {
+    0,  // will store the shared library later
+    0,  // will store the shared library later
+  }
+};
+
+static const type_support_map_t _NavigateToGoal_SendGoal_Response_message_typesupport_map = {
+  2,
+  "smrr_interfaces",
+  &_NavigateToGoal_SendGoal_Response_message_typesupport_ids.typesupport_identifier[0],
+  &_NavigateToGoal_SendGoal_Response_message_typesupport_symbol_names.symbol_name[0],
+  &_NavigateToGoal_SendGoal_Response_message_typesupport_data.data[0],
+};
+
+static const rosidl_message_type_support_t NavigateToGoal_SendGoal_Response_message_type_support_handle = {
+  ::rosidl_typesupport_cpp::typesupport_identifier,
+  reinterpret_cast<const type_support_map_t *>(&_NavigateToGoal_SendGoal_Response_message_typesupport_map),
+  ::rosidl_typesupport_cpp::get_message_typesupport_handle_function,
+};
+
+}  // namespace rosidl_typesupport_cpp
+
+}  // namespace action
+
+}  // namespace smrr_interfaces
+
+namespace rosidl_typesupport_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_SendGoal_Response>()
+{
+  return &::smrr_interfaces::action::rosidl_typesupport_cpp::NavigateToGoal_SendGoal_Response_message_type_support_handle;
+}
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_cpp, smrr_interfaces, action, NavigateToGoal_SendGoal_Response)() {
+  return get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_SendGoal_Response>();
+}
+
+#ifdef __cplusplus
+}
+#endif
+}  // namespace rosidl_typesupport_cpp
+
+// already included above
+// #include "cstddef"
+#include "rosidl_runtime_c/service_type_support_struct.h"
+// already included above
+// #include "smrr_interfaces/action/detail/navigate_to_goal__struct.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/identifier.hpp"
+#include "rosidl_typesupport_cpp/service_type_support.hpp"
+// already included above
+// #include "rosidl_typesupport_c/type_support_map.h"
+#include "rosidl_typesupport_cpp/service_type_support_dispatch.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/visibility_control.h"
+// already included above
+// #include "rosidl_typesupport_interface/macros.h"
+
+namespace smrr_interfaces
+{
+
+namespace action
+{
+
+namespace rosidl_typesupport_cpp
+{
+
+typedef struct _NavigateToGoal_SendGoal_type_support_ids_t
+{
+  const char * typesupport_identifier[2];
+} _NavigateToGoal_SendGoal_type_support_ids_t;
+
+static const _NavigateToGoal_SendGoal_type_support_ids_t _NavigateToGoal_SendGoal_service_typesupport_ids = {
+  {
+    "rosidl_typesupport_fastrtps_cpp",  // ::rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
+    "rosidl_typesupport_introspection_cpp",  // ::rosidl_typesupport_introspection_cpp::typesupport_identifier,
+  }
+};
+
+typedef struct _NavigateToGoal_SendGoal_type_support_symbol_names_t
+{
+  const char * symbol_name[2];
+} _NavigateToGoal_SendGoal_type_support_symbol_names_t;
+
+#define STRINGIFY_(s) #s
+#define STRINGIFY(s) STRINGIFY_(s)
+
+static const _NavigateToGoal_SendGoal_type_support_symbol_names_t _NavigateToGoal_SendGoal_service_typesupport_symbol_names = {
+  {
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, smrr_interfaces, action, NavigateToGoal_SendGoal)),
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(rosidl_typesupport_introspection_cpp, smrr_interfaces, action, NavigateToGoal_SendGoal)),
+  }
+};
+
+typedef struct _NavigateToGoal_SendGoal_type_support_data_t
+{
+  void * data[2];
+} _NavigateToGoal_SendGoal_type_support_data_t;
+
+static _NavigateToGoal_SendGoal_type_support_data_t _NavigateToGoal_SendGoal_service_typesupport_data = {
+  {
+    0,  // will store the shared library later
+    0,  // will store the shared library later
+  }
+};
+
+static const type_support_map_t _NavigateToGoal_SendGoal_service_typesupport_map = {
+  2,
+  "smrr_interfaces",
+  &_NavigateToGoal_SendGoal_service_typesupport_ids.typesupport_identifier[0],
+  &_NavigateToGoal_SendGoal_service_typesupport_symbol_names.symbol_name[0],
+  &_NavigateToGoal_SendGoal_service_typesupport_data.data[0],
+};
+
+static const rosidl_service_type_support_t NavigateToGoal_SendGoal_service_type_support_handle = {
+  ::rosidl_typesupport_cpp::typesupport_identifier,
+  reinterpret_cast<const type_support_map_t *>(&_NavigateToGoal_SendGoal_service_typesupport_map),
+  ::rosidl_typesupport_cpp::get_service_typesupport_handle_function,
+};
+
+}  // namespace rosidl_typesupport_cpp
+
+}  // namespace action
+
+}  // namespace smrr_interfaces
+
+namespace rosidl_typesupport_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_service_type_support_t *
+get_service_type_support_handle<smrr_interfaces::action::NavigateToGoal_SendGoal>()
+{
+  return &::smrr_interfaces::action::rosidl_typesupport_cpp::NavigateToGoal_SendGoal_service_type_support_handle;
+}
+
+}  // namespace rosidl_typesupport_cpp
+
+// already included above
+// #include "cstddef"
+// already included above
+// #include "rosidl_runtime_c/message_type_support_struct.h"
+// already included above
+// #include "smrr_interfaces/action/detail/navigate_to_goal__struct.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/identifier.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support.hpp"
+// already included above
+// #include "rosidl_typesupport_c/type_support_map.h"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support_dispatch.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/visibility_control.h"
+// already included above
+// #include "rosidl_typesupport_interface/macros.h"
+
+namespace smrr_interfaces
+{
+
+namespace action
+{
+
+namespace rosidl_typesupport_cpp
+{
+
+typedef struct _NavigateToGoal_GetResult_Request_type_support_ids_t
+{
+  const char * typesupport_identifier[2];
+} _NavigateToGoal_GetResult_Request_type_support_ids_t;
+
+static const _NavigateToGoal_GetResult_Request_type_support_ids_t _NavigateToGoal_GetResult_Request_message_typesupport_ids = {
+  {
+    "rosidl_typesupport_fastrtps_cpp",  // ::rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
+    "rosidl_typesupport_introspection_cpp",  // ::rosidl_typesupport_introspection_cpp::typesupport_identifier,
+  }
+};
+
+typedef struct _NavigateToGoal_GetResult_Request_type_support_symbol_names_t
+{
+  const char * symbol_name[2];
+} _NavigateToGoal_GetResult_Request_type_support_symbol_names_t;
+
+#define STRINGIFY_(s) #s
+#define STRINGIFY(s) STRINGIFY_(s)
+
+static const _NavigateToGoal_GetResult_Request_type_support_symbol_names_t _NavigateToGoal_GetResult_Request_message_typesupport_symbol_names = {
+  {
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, smrr_interfaces, action, NavigateToGoal_GetResult_Request)),
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_cpp, smrr_interfaces, action, NavigateToGoal_GetResult_Request)),
+  }
+};
+
+typedef struct _NavigateToGoal_GetResult_Request_type_support_data_t
+{
+  void * data[2];
+} _NavigateToGoal_GetResult_Request_type_support_data_t;
+
+static _NavigateToGoal_GetResult_Request_type_support_data_t _NavigateToGoal_GetResult_Request_message_typesupport_data = {
+  {
+    0,  // will store the shared library later
+    0,  // will store the shared library later
+  }
+};
+
+static const type_support_map_t _NavigateToGoal_GetResult_Request_message_typesupport_map = {
+  2,
+  "smrr_interfaces",
+  &_NavigateToGoal_GetResult_Request_message_typesupport_ids.typesupport_identifier[0],
+  &_NavigateToGoal_GetResult_Request_message_typesupport_symbol_names.symbol_name[0],
+  &_NavigateToGoal_GetResult_Request_message_typesupport_data.data[0],
+};
+
+static const rosidl_message_type_support_t NavigateToGoal_GetResult_Request_message_type_support_handle = {
+  ::rosidl_typesupport_cpp::typesupport_identifier,
+  reinterpret_cast<const type_support_map_t *>(&_NavigateToGoal_GetResult_Request_message_typesupport_map),
+  ::rosidl_typesupport_cpp::get_message_typesupport_handle_function,
+};
+
+}  // namespace rosidl_typesupport_cpp
+
+}  // namespace action
+
+}  // namespace smrr_interfaces
+
+namespace rosidl_typesupport_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_GetResult_Request>()
+{
+  return &::smrr_interfaces::action::rosidl_typesupport_cpp::NavigateToGoal_GetResult_Request_message_type_support_handle;
+}
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_cpp, smrr_interfaces, action, NavigateToGoal_GetResult_Request)() {
+  return get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_GetResult_Request>();
+}
+
+#ifdef __cplusplus
+}
+#endif
+}  // namespace rosidl_typesupport_cpp
+
+// already included above
+// #include "cstddef"
+// already included above
+// #include "rosidl_runtime_c/message_type_support_struct.h"
+// already included above
+// #include "smrr_interfaces/action/detail/navigate_to_goal__struct.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/identifier.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support.hpp"
+// already included above
+// #include "rosidl_typesupport_c/type_support_map.h"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support_dispatch.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/visibility_control.h"
+// already included above
+// #include "rosidl_typesupport_interface/macros.h"
+
+namespace smrr_interfaces
+{
+
+namespace action
+{
+
+namespace rosidl_typesupport_cpp
+{
+
+typedef struct _NavigateToGoal_GetResult_Response_type_support_ids_t
+{
+  const char * typesupport_identifier[2];
+} _NavigateToGoal_GetResult_Response_type_support_ids_t;
+
+static const _NavigateToGoal_GetResult_Response_type_support_ids_t _NavigateToGoal_GetResult_Response_message_typesupport_ids = {
+  {
+    "rosidl_typesupport_fastrtps_cpp",  // ::rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
+    "rosidl_typesupport_introspection_cpp",  // ::rosidl_typesupport_introspection_cpp::typesupport_identifier,
+  }
+};
+
+typedef struct _NavigateToGoal_GetResult_Response_type_support_symbol_names_t
+{
+  const char * symbol_name[2];
+} _NavigateToGoal_GetResult_Response_type_support_symbol_names_t;
+
+#define STRINGIFY_(s) #s
+#define STRINGIFY(s) STRINGIFY_(s)
+
+static const _NavigateToGoal_GetResult_Response_type_support_symbol_names_t _NavigateToGoal_GetResult_Response_message_typesupport_symbol_names = {
+  {
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, smrr_interfaces, action, NavigateToGoal_GetResult_Response)),
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_cpp, smrr_interfaces, action, NavigateToGoal_GetResult_Response)),
+  }
+};
+
+typedef struct _NavigateToGoal_GetResult_Response_type_support_data_t
+{
+  void * data[2];
+} _NavigateToGoal_GetResult_Response_type_support_data_t;
+
+static _NavigateToGoal_GetResult_Response_type_support_data_t _NavigateToGoal_GetResult_Response_message_typesupport_data = {
+  {
+    0,  // will store the shared library later
+    0,  // will store the shared library later
+  }
+};
+
+static const type_support_map_t _NavigateToGoal_GetResult_Response_message_typesupport_map = {
+  2,
+  "smrr_interfaces",
+  &_NavigateToGoal_GetResult_Response_message_typesupport_ids.typesupport_identifier[0],
+  &_NavigateToGoal_GetResult_Response_message_typesupport_symbol_names.symbol_name[0],
+  &_NavigateToGoal_GetResult_Response_message_typesupport_data.data[0],
+};
+
+static const rosidl_message_type_support_t NavigateToGoal_GetResult_Response_message_type_support_handle = {
+  ::rosidl_typesupport_cpp::typesupport_identifier,
+  reinterpret_cast<const type_support_map_t *>(&_NavigateToGoal_GetResult_Response_message_typesupport_map),
+  ::rosidl_typesupport_cpp::get_message_typesupport_handle_function,
+};
+
+}  // namespace rosidl_typesupport_cpp
+
+}  // namespace action
+
+}  // namespace smrr_interfaces
+
+namespace rosidl_typesupport_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_GetResult_Response>()
+{
+  return &::smrr_interfaces::action::rosidl_typesupport_cpp::NavigateToGoal_GetResult_Response_message_type_support_handle;
+}
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_cpp, smrr_interfaces, action, NavigateToGoal_GetResult_Response)() {
+  return get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_GetResult_Response>();
+}
+
+#ifdef __cplusplus
+}
+#endif
+}  // namespace rosidl_typesupport_cpp
+
+// already included above
+// #include "cstddef"
+// already included above
+// #include "rosidl_runtime_c/service_type_support_struct.h"
+// already included above
+// #include "smrr_interfaces/action/detail/navigate_to_goal__struct.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/identifier.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/service_type_support.hpp"
+// already included above
+// #include "rosidl_typesupport_c/type_support_map.h"
+// already included above
+// #include "rosidl_typesupport_cpp/service_type_support_dispatch.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/visibility_control.h"
+// already included above
+// #include "rosidl_typesupport_interface/macros.h"
+
+namespace smrr_interfaces
+{
+
+namespace action
+{
+
+namespace rosidl_typesupport_cpp
+{
+
+typedef struct _NavigateToGoal_GetResult_type_support_ids_t
+{
+  const char * typesupport_identifier[2];
+} _NavigateToGoal_GetResult_type_support_ids_t;
+
+static const _NavigateToGoal_GetResult_type_support_ids_t _NavigateToGoal_GetResult_service_typesupport_ids = {
+  {
+    "rosidl_typesupport_fastrtps_cpp",  // ::rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
+    "rosidl_typesupport_introspection_cpp",  // ::rosidl_typesupport_introspection_cpp::typesupport_identifier,
+  }
+};
+
+typedef struct _NavigateToGoal_GetResult_type_support_symbol_names_t
+{
+  const char * symbol_name[2];
+} _NavigateToGoal_GetResult_type_support_symbol_names_t;
+
+#define STRINGIFY_(s) #s
+#define STRINGIFY(s) STRINGIFY_(s)
+
+static const _NavigateToGoal_GetResult_type_support_symbol_names_t _NavigateToGoal_GetResult_service_typesupport_symbol_names = {
+  {
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, smrr_interfaces, action, NavigateToGoal_GetResult)),
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(rosidl_typesupport_introspection_cpp, smrr_interfaces, action, NavigateToGoal_GetResult)),
+  }
+};
+
+typedef struct _NavigateToGoal_GetResult_type_support_data_t
+{
+  void * data[2];
+} _NavigateToGoal_GetResult_type_support_data_t;
+
+static _NavigateToGoal_GetResult_type_support_data_t _NavigateToGoal_GetResult_service_typesupport_data = {
+  {
+    0,  // will store the shared library later
+    0,  // will store the shared library later
+  }
+};
+
+static const type_support_map_t _NavigateToGoal_GetResult_service_typesupport_map = {
+  2,
+  "smrr_interfaces",
+  &_NavigateToGoal_GetResult_service_typesupport_ids.typesupport_identifier[0],
+  &_NavigateToGoal_GetResult_service_typesupport_symbol_names.symbol_name[0],
+  &_NavigateToGoal_GetResult_service_typesupport_data.data[0],
+};
+
+static const rosidl_service_type_support_t NavigateToGoal_GetResult_service_type_support_handle = {
+  ::rosidl_typesupport_cpp::typesupport_identifier,
+  reinterpret_cast<const type_support_map_t *>(&_NavigateToGoal_GetResult_service_typesupport_map),
+  ::rosidl_typesupport_cpp::get_service_typesupport_handle_function,
+};
+
+}  // namespace rosidl_typesupport_cpp
+
+}  // namespace action
+
+}  // namespace smrr_interfaces
+
+namespace rosidl_typesupport_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_service_type_support_t *
+get_service_type_support_handle<smrr_interfaces::action::NavigateToGoal_GetResult>()
+{
+  return &::smrr_interfaces::action::rosidl_typesupport_cpp::NavigateToGoal_GetResult_service_type_support_handle;
+}
+
+}  // namespace rosidl_typesupport_cpp
+
+// already included above
+// #include "cstddef"
+// already included above
+// #include "rosidl_runtime_c/message_type_support_struct.h"
+// already included above
+// #include "smrr_interfaces/action/detail/navigate_to_goal__struct.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/identifier.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support.hpp"
+// already included above
+// #include "rosidl_typesupport_c/type_support_map.h"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support_dispatch.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/visibility_control.h"
+// already included above
+// #include "rosidl_typesupport_interface/macros.h"
+
+namespace smrr_interfaces
+{
+
+namespace action
+{
+
+namespace rosidl_typesupport_cpp
+{
+
+typedef struct _NavigateToGoal_FeedbackMessage_type_support_ids_t
+{
+  const char * typesupport_identifier[2];
+} _NavigateToGoal_FeedbackMessage_type_support_ids_t;
+
+static const _NavigateToGoal_FeedbackMessage_type_support_ids_t _NavigateToGoal_FeedbackMessage_message_typesupport_ids = {
+  {
+    "rosidl_typesupport_fastrtps_cpp",  // ::rosidl_typesupport_fastrtps_cpp::typesupport_identifier,
+    "rosidl_typesupport_introspection_cpp",  // ::rosidl_typesupport_introspection_cpp::typesupport_identifier,
+  }
+};
+
+typedef struct _NavigateToGoal_FeedbackMessage_type_support_symbol_names_t
+{
+  const char * symbol_name[2];
+} _NavigateToGoal_FeedbackMessage_type_support_symbol_names_t;
+
+#define STRINGIFY_(s) #s
+#define STRINGIFY(s) STRINGIFY_(s)
+
+static const _NavigateToGoal_FeedbackMessage_type_support_symbol_names_t _NavigateToGoal_FeedbackMessage_message_typesupport_symbol_names = {
+  {
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_cpp, smrr_interfaces, action, NavigateToGoal_FeedbackMessage)),
+    STRINGIFY(ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_cpp, smrr_interfaces, action, NavigateToGoal_FeedbackMessage)),
+  }
+};
+
+typedef struct _NavigateToGoal_FeedbackMessage_type_support_data_t
+{
+  void * data[2];
+} _NavigateToGoal_FeedbackMessage_type_support_data_t;
+
+static _NavigateToGoal_FeedbackMessage_type_support_data_t _NavigateToGoal_FeedbackMessage_message_typesupport_data = {
+  {
+    0,  // will store the shared library later
+    0,  // will store the shared library later
+  }
+};
+
+static const type_support_map_t _NavigateToGoal_FeedbackMessage_message_typesupport_map = {
+  2,
+  "smrr_interfaces",
+  &_NavigateToGoal_FeedbackMessage_message_typesupport_ids.typesupport_identifier[0],
+  &_NavigateToGoal_FeedbackMessage_message_typesupport_symbol_names.symbol_name[0],
+  &_NavigateToGoal_FeedbackMessage_message_typesupport_data.data[0],
+};
+
+static const rosidl_message_type_support_t NavigateToGoal_FeedbackMessage_message_type_support_handle = {
+  ::rosidl_typesupport_cpp::typesupport_identifier,
+  reinterpret_cast<const type_support_map_t *>(&_NavigateToGoal_FeedbackMessage_message_typesupport_map),
+  ::rosidl_typesupport_cpp::get_message_typesupport_handle_function,
+};
+
+}  // namespace rosidl_typesupport_cpp
+
+}  // namespace action
+
+}  // namespace smrr_interfaces
+
+namespace rosidl_typesupport_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_FeedbackMessage>()
+{
+  return &::smrr_interfaces::action::rosidl_typesupport_cpp::NavigateToGoal_FeedbackMessage_message_type_support_handle;
+}
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_message_type_support_t *
+ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_cpp, smrr_interfaces, action, NavigateToGoal_FeedbackMessage)() {
+  return get_message_type_support_handle<smrr_interfaces::action::NavigateToGoal_FeedbackMessage>();
+}
+
+#ifdef __cplusplus
+}
+#endif
+}  // namespace rosidl_typesupport_cpp
+
+#include "action_msgs/msg/goal_status_array.hpp"
+#include "action_msgs/srv/cancel_goal.hpp"
+// already included above
+// #include "smrr_interfaces/action/detail/navigate_to_goal__struct.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/visibility_control.h"
+#include "rosidl_runtime_c/action_type_support_struct.h"
+#include "rosidl_typesupport_cpp/action_type_support.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/message_type_support.hpp"
+// already included above
+// #include "rosidl_typesupport_cpp/service_type_support.hpp"
+
+namespace smrr_interfaces
+{
+
+namespace action
+{
+
+namespace rosidl_typesupport_cpp
+{
+
+static rosidl_action_type_support_t NavigateToGoal_action_type_support_handle = {
+  NULL, NULL, NULL, NULL, NULL};
+
+}  // namespace rosidl_typesupport_cpp
+
+}  // namespace action
+
+}  // namespace smrr_interfaces
+
+namespace rosidl_typesupport_cpp
+{
+
+template<>
+ROSIDL_TYPESUPPORT_CPP_PUBLIC
+const rosidl_action_type_support_t *
+get_action_type_support_handle<smrr_interfaces::action::NavigateToGoal>()
+{
+  using ::smrr_interfaces::action::rosidl_typesupport_cpp::NavigateToGoal_action_type_support_handle;
+  // Thread-safe by always writing the same values to the static struct
+  NavigateToGoal_action_type_support_handle.goal_service_type_support = get_service_type_support_handle<::smrr_interfaces::action::NavigateToGoal::Impl::SendGoalService>();
+  NavigateToGoal_action_type_support_handle.result_service_type_support = get_service_type_support_handle<::smrr_interfaces::action::NavigateToGoal::Impl::GetResultService>();
+  NavigateToGoal_action_type_support_handle.cancel_service_type_support = get_service_type_support_handle<::smrr_interfaces::action::NavigateToGoal::Impl::CancelGoalService>();
+  NavigateToGoal_action_type_support_handle.feedback_message_type_support = get_message_type_support_handle<::smrr_interfaces::action::NavigateToGoal::Impl::FeedbackMessage>();
+  NavigateToGoal_action_type_support_handle.status_message_type_support = get_message_type_support_handle<::smrr_interfaces::action::NavigateToGoal::Impl::GoalStatusMessage>();
+  return &NavigateToGoal_action_type_support_handle;
+}
+
+}  // namespace rosidl_typesupport_cpp

@@ -16,7 +16,7 @@ class LidarSubscriber(Node):
         super().__init__("lidar_subscriber")
         self.cb_group      = ReentrantCallbackGroup()
         self.laser_sub_    = self.create_subscription(LaserScan, "/scan", self.lidar_callback, 10, callback_group=self.cb_group)
-        self.laser_pub_    = self.create_publisher(Entities, "/object_tracker/laser_data_array", 10)
+        self.laser_pub_    = self.create_publisher(Entities, "/object_tracker/laser_data_array_", 10)
         self.stat_obs_pub_ = self.create_publisher(Entities, "/object_tracker/static_data_array", 10)
         self.transform     = GeometricTransformations(self)
 
@@ -29,7 +29,15 @@ class LidarSubscriber(Node):
         lidar_angle_min       = lidar_data_msg.angle_min
         lidar_angle_increment = lidar_data_msg.angle_increment
 
-        lidar_angles          = np.arange(lidar_angle_min, lidar_angle_min + len(lidar_ranges) * lidar_angle_increment, lidar_angle_increment)
+        valid_mask = (lidar_ranges <= 6.0)
+
+        lidar_ranges = lidar_ranges[valid_mask]
+
+        lidar_angles = np.arange(lidar_angle_min, 
+                                lidar_angle_min + len(lidar_data_msg.ranges) * lidar_angle_increment, 
+                                lidar_angle_increment)
+        lidar_angles = lidar_angles[valid_mask] 
+
         lidar_x               = lidar_ranges * np.cos(lidar_angles)
         lidar_y               = lidar_ranges * np.sin(lidar_angles)
 
@@ -84,34 +92,35 @@ class LidarSubscriber(Node):
                 if min_distance > threshold:
                     new_lidar_data.append(visual_point.tolist())
 
-            unique_lidar_data = []
+            
 
-            for i, point in enumerate(new_lidar_data):
-                if point not in unique_lidar_data:
-                    unique_lidar_data.append(point)
+            if len(new_lidar_data) > 0:
+                new_lidar_data_np = np.array(new_lidar_data)
+                unique_lidar_data_np = np.unique(new_lidar_data_np, axis=0)
+                lidar_data = unique_lidar_data_np.tolist()
+            else:
+                lidar_data = []
 
-            lidar_data      = unique_lidar_data
             lidar_data      = np.array(lidar_data)
             lidar_data_xy   = lidar_data[:, :2]
             lidar_data_xy   = np.array(lidar_data_xy, dtype=float)
 
-            # Define the human exclusion radius
+
+            # --------------------------- Static Obstacles Detection --------------------------
             human_radius = 0.75  
 
-            if lidar_data_xy.shape[0] == 0:  # No human data available
+            if lidar_data_xy.shape[0] == 0:  
                 static_obstacle_points = lidar_points  # Keep all LiDAR points as static obstacles
             else:
-                # Compute distances of all LiDAR points to each human position
                 distances_ = np.linalg.norm(lidar_points[:, None, :] - lidar_data_xy[None, :, :], axis=2)
 
-                # Find the minimum distance from each lidar point to any human
                 min_distances = np.min(distances_, axis=1)
-
-                # Select points that are outside the human radius
                 static_obstacle_mask = min_distances > human_radius
                 static_obstacle_points = lidar_points[static_obstacle_mask]
 
-            # transform the lidar data to the map frame
+
+
+            # --------------------- Lidar Data into map frame from rplidar frame --------------
             transformation = self.transform.get_transform("map", "rplidar_link")
             obs_arr        = np.hstack((lidar_data_xy[:,0], lidar_data_xy[:,1], np.zeros_like(lidar_data_xy[:,0]), np.ones_like(lidar_data_xy[:,0]))).reshape(4,-1)
             static_obs_arr = np.hstack((static_obstacle_points[:,0],static_obstacle_points[:,1], np.zeros_like(static_obstacle_points[:,0]), np.ones_like(static_obstacle_points[:,0]))).reshape(4,-1)
@@ -127,7 +136,10 @@ class LidarSubscriber(Node):
             
             entities          = Entities()
             entities.count    = len(lidar_data)
-            arr_classes       = lidar_data[:, 2]
+
+            lidar_data_       = np.array(lidar_data)
+            arr_classes       = lidar_data_[:, 2]
+
             arr_classes       = np.array(arr_classes, dtype=str)
             entities.classes  = arr_classes.tolist()
             arr_x             = transformed_lidar_data[:, 0]

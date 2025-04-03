@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'inference_node = object_tracker.inference_node:main',
             'lidar_subscriber = object_tracker.lidar_subscriber:main',
+            'lidar_subscriber_v2 = object_tracker.lidar_subscriber_v2:main',
             'visualizer = object_tracker.visualizer:main',
         ],
     },

@@ -1,0 +1,1 @@
+/home/sadeep/mobile_receptionist_ws/src/smrr_interfaces/msg/DataElementInt.msg

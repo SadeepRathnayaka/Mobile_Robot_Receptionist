@@ -1,0 +1,25 @@
+// generated from rosidl_adapter/resource/action.idl.em
+// with input from smrr_interfaces/action/ArmControlServer.action
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Float64MultiArray.idl"
+
+module smrr_interfaces {
+  module action {
+    @verbatim (language="comment", text=
+      "Goal")
+    struct ArmControlServer_Goal {
+      std_msgs::msg::Float64MultiArray target_joints_angles;
+    };
+    @verbatim (language="comment", text=
+      "Result")
+    struct ArmControlServer_Result {
+      boolean success;
+    };
+    @verbatim (language="comment", text=
+      "Feedback")
+    struct ArmControlServer_Feedback {
+      std_msgs::msg::Float64MultiArray current_joints_angles;
+    };
+  };
+};

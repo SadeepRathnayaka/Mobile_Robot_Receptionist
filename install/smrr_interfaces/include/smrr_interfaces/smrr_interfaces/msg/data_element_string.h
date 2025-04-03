@@ -1,0 +1,1 @@
+/home/sadeep/mobile_receptionist_ws/src/build/smrr_interfaces/rosidl_generator_c/smrr_interfaces/msg/data_element_string.h

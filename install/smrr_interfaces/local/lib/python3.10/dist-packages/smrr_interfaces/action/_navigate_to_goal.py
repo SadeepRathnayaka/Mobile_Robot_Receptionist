@@ -1,0 +1,1 @@
+/home/sadeep/mobile_receptionist_ws/src/build/smrr_interfaces/rosidl_generator_py/smrr_interfaces/action/_navigate_to_goal.py

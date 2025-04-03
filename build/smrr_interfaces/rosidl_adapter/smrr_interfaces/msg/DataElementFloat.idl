@@ -1,0 +1,12 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from smrr_interfaces/msg/DataElementFloat.msg
+// generated code does not contain a copyright notice
+
+
+module smrr_interfaces {
+  module msg {
+    struct DataElementFloat {
+      sequence<float> float_data;
+    };
+  };
+};

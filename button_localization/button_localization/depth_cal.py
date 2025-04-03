@@ -84,3 +84,6 @@ def main(args=None):
 
     camera_subscriber.destroy_node()
     rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
