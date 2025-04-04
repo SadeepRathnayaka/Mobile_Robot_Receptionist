@@ -1,1 +1,0 @@
-/home/sadeep/mobile_receptionist_ws/src/build/smrr_interfaces/ament_cmake_python/smrr_interfaces/smrr_interfaces.egg-info/dependency_links.txt

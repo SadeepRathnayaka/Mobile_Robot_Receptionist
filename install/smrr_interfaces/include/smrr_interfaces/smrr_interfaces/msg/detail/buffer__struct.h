@@ -1,1 +1,0 @@
-/home/sadeep/mobile_receptionist_ws/src/build/smrr_interfaces/rosidl_generator_c/smrr_interfaces/msg/detail/buffer__struct.h

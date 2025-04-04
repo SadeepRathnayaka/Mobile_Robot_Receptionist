@@ -1,1 +1,0 @@
-/home/sadeep/mobile_receptionist_ws/src/build/smrr_interfaces/rosidl_typesupport_fastrtps_c/smrr_interfaces/msg/detail/entities__rosidl_typesupport_fastrtps_c.h

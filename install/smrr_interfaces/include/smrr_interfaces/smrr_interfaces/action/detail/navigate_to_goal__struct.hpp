@@ -1,1 +1,0 @@
-/home/sadeep/mobile_receptionist_ws/src/build/smrr_interfaces/rosidl_generator_cpp/smrr_interfaces/action/detail/navigate_to_goal__struct.hpp

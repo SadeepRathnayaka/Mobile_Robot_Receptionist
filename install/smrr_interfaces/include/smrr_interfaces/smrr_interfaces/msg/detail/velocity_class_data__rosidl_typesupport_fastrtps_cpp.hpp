@@ -1,1 +1,0 @@
-/home/sadeep/mobile_receptionist_ws/src/build/smrr_interfaces/rosidl_typesupport_fastrtps_cpp/smrr_interfaces/msg/detail/velocity_class_data__rosidl_typesupport_fastrtps_cpp.hpp
