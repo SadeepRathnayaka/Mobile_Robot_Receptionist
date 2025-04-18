@@ -5,7 +5,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image, CameraInfo
 from cv_bridge import CvBridge
 import numpy as np
-from smrr_interfaces.msg import Entities
+from smrr_interfaces.msg import Entities, Footprint
 import math
 import torch
 from .include.inference_node_utils import InferenceNodeUtils
@@ -21,6 +21,7 @@ class CameraSubscriber(Node):
         # self.sub_       = self.create_subscription(Image, '/color/image_raw', self.camera_callback, 10)
         self.img_pub_   = self.create_publisher(Image, '/object_tracker/inference_result', 1)
         self.array_pub_ = self.create_publisher(Entities, '/object_tracker/visual_dynamic_obs_array', 1)
+        self.footprint_pub_ = self.create_publisher(Footprint, '/object_tracker/footprint_array', 1)
 
         self.sub_color = self.create_subscription(Image, '/color/image_raw', self.camera_callback, 10)
         self.sub_depth = self.create_subscription(Image, '/aligned_depth_to_color/image_raw', self.depth_callback, 10)
@@ -71,6 +72,14 @@ class CameraSubscriber(Node):
             entities.y = arr_y
 
             self.array_pub_.publish(entities)
+
+            footprint = Footprint()
+            footprint.count = len(width)
+            footprint.d = width
+
+            self.footprint_pub_.publish(footprint)
+
+
             img_msg = bridge.cv2_to_imgmsg(img)
             self.img_pub_.publish(img_msg)
     

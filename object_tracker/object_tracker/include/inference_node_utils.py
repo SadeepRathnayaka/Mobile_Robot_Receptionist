@@ -20,7 +20,7 @@ class InferenceNodeUtils():
         return (hor_dis * 45.07) / 557
     
     def coordinates_from_camera(self, results, img, mid_point_x, camera_matrix, depth_image):
-        classes, arr_x, arr_y, real_width = [], [], [], []
+        classes, arr_x, arr_y, arr_width = [], [], [], []
 
         fx, fy = camera_matrix[0, 0], camera_matrix[1, 1]  # Focal lengths
         cx, cy = camera_matrix[0, 2], camera_matrix[1, 2]  # Principal point
@@ -92,5 +92,6 @@ class InferenceNodeUtils():
                     classes.append(self.model.names[int(c)])
                     arr_x.append(lidar_x)
                     arr_y.append(lidar_y)
+                    arr_width.append(real_width)
 
-        return classes, arr_x, arr_y, real_width
+        return classes, arr_x, arr_y, arr_width

@@ -17,7 +17,7 @@ class LidarSubscriber(Node):
         self.cb_group      = ReentrantCallbackGroup()
         self.laser_sub_    = self.create_subscription(LaserScan, "/scan", self.lidar_callback, 10, callback_group=self.cb_group)
         self.laser_pub_    = self.create_publisher(Entities, "/object_tracker/laser_data_array_", 10)
-        self.stat_obs_pub_ = self.create_publisher(Entities, "/object_tracker/static_data_array", 10)
+        self.stat_obs_pub_ = self.create_publisher(Entities, "/object_tracker/static_data_array_", 10)
         self.transform     = GeometricTransformations(self)
 
         self.get_logger().info("Lidar subscriber node has been started")
@@ -58,8 +58,8 @@ class LidarSubscriber(Node):
                 continue
 
             if len(points_within_circle) == 0:
-                median_lidar_x = 0
-                median_lidar_y = 0
+                median_lidar_x = 1000
+                median_lidar_y = 1000
                 updated_lidar_data.append([median_lidar_x, median_lidar_y, class_])
                 self.get_logger().warn(f"Person {i} not found in LiDAR data")
                 continue
