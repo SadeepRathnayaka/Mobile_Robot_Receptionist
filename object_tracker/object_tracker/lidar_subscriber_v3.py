@@ -26,9 +26,11 @@ class LidarProcessor:
         y = ranges * np.sin(angles)
         return np.column_stack((x, y))
     
+    
     def update_tracked_entities(self, lidar_points, threshold=0.5):
-        """Update tracked entities based on new lidar data"""
+        """Update tracked entities with deduplication"""
         updated_data = []
+        seen_entities = set()  # Track already processed entities
         
         for entity in self.lidar_data:
             if len(entity) < 2:  # Skip invalid entries
@@ -37,26 +39,34 @@ class LidarProcessor:
             person_x, person_y = float(entity[0]), float(entity[1])
             class_ = entity[2] if len(entity) > 2 else "unknown"
             
+            # Skip if marked as lost (1000,1000) or too far
             if person_x > 100.0 or person_y > 100.0:
                 continue
                 
+            # Create a unique identifier for this entity (rounded coordinates + class)
+            entity_id = (round(person_x, 2), round(person_y, 2), class_)
+            
+            # Skip if we've already processed this entity
+            if entity_id in seen_entities:
+                continue
+            seen_entities.add(entity_id)
+            
             distances = np.linalg.norm(lidar_points - [person_x, person_y], axis=1)
             nearby_points = distances <= threshold
             
             if not np.any(nearby_points):
                 self.node.get_logger().warn(f"Entity with class {class_} not found in LiDAR data")
+                updated_data.append([1000, 1000, class_])
 
                 # print("------------New --------------------------")
-                # print(entity)
-                # print("nearby points : ", distances)
+                # print(updated_data)
                 # print("------------------------------------------")
 
-                updated_data.append([1000, 1000, class_])  # Mark as far away
                 continue
                 
             median_x, median_y = np.mean(lidar_points[nearby_points], axis=0)
-            updated_data.append([median_x, median_y, class_])
-            
+            updated_data.append([round(median_x, 2), round(median_y, 2), class_])
+        
         return updated_data
     
     def fuse_visual_data(self, visual_data, threshold=0.4):
