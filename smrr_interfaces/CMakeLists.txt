@@ -19,6 +19,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DataElementInt.msg"
   "msg/DataElementString.msg"
   "msg/PrefVelocity.msg"
+  "msg/Footprint.msg"
   "msg/VelocityClassData.msg"
   "action/NavigateToGoal.action"
   "action/ArmControlServer.action"
