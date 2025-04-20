@@ -146,7 +146,7 @@ class CrowdNavMPCNode(Node):
         self.create_subscription(Entities, '/int_goals', self.int_goals_callback, 10)
         
 
-        self.create_subscription(Footprint, '/object_tracker/footprint_array', self.human_footprint_callback, 10)
+        # self.create_subscription(Footprint, '/object_tracker/footprint_array', self.human_footprint_callback, 10)
         self.create_subscription(Odometry, '/diff_drive_controller/odom', self.robot_velocity_callback, 10)
 
         # Publisher for control commands (v, omega)
@@ -157,6 +157,8 @@ class CrowdNavMPCNode(Node):
         self.get_logger().info("Node initiated")
 
         self.global_path = []
+        self.global_path_received = []
+        self.int_goals_recevied = 0
         
         self.intermediate_goal = -1
         self.final_gx = 0
@@ -207,6 +209,10 @@ class CrowdNavMPCNode(Node):
         self.intermediate_goal = -1
 
 
+        self.global_path = self.global_path_received
+        self.int_goals = self.int_goals_recevied
+
+
 
         # #planner = DijkstraGlobalPlanner(self.static_obs, self.int_goals)
         # planner = SimplePathPlanner(self.static_obs, self.int_goals)
@@ -248,6 +254,8 @@ class CrowdNavMPCNode(Node):
             self.infeasible = False
             self.error_count = 0
             self.min_social_distance_array = []
+
+            
 
 
 
@@ -465,8 +473,14 @@ class CrowdNavMPCNode(Node):
 
         print("loaded int goal array")
 
+        self.global_path_received = []
+
         for i in range(length):
-            self.global_path.append((msg.x[i], msg.y[i]))
+            self.global_path_received.append((msg.x[i], msg.y[i]))
+
+        
+
+        self.int_goals_recevied = length-2
 
     def rotate_to_goal_angle(self, goal_yaw_degrees):
         """Rotate the robot to align with the goal orientation after reaching the goal."""
@@ -582,9 +596,15 @@ class CrowdNavMPCNode(Node):
             
             MPC = self.policy.predict(env_state)      
 
-            action = MPC[0]
-            next_states = MPC[1]
-            human_next_states = MPC[2]
+            try:
+                action = MPC[0]
+                next_states = MPC[1]
+                human_next_states = MPC[2]
+
+            except:
+                action = (0,0)
+                next_states = []
+                human_next_states = []
 
             
 
@@ -819,6 +839,42 @@ class CrowdNavMPCNode(Node):
 
         
 
+        # # Trajectory subplot
+        # robot_x, robot_y = [], []
+        # for t in range(num_timesteps):
+        #     if len(path_data[t]) > 0:
+        #         robot_x.append(path_data[t][0][0])
+        #         robot_y.append(path_data[t][0][1])
+        # ax2.plot(robot_x, robot_y, 'b-', linewidth=2, label='Robot Path')
+        # if len(robot_x) > 0:
+        #     ax2.scatter(robot_x[0], robot_y[0], color='green', s=150, zorder=5, label='Robot Start')
+        #     ax2.scatter(robot_x[-1], robot_y[-1], color='red', s=150, zorder=5, label='Robot End')
+
+        # # Plot human positions and annotate timesteps
+        # for t in range(num_timesteps):
+        #     if len(path_data[t]) > 1:
+        #         humans = path_data[t][1:]
+        #         for human in humans:
+        #             ax2.scatter(human[0], human[1], color=time_cmap[t], s=50, alpha=0.7, edgecolor='k')
+        #             ax2.text(human[0] + 0.05, human[1] + 0.05, str(t), fontsize=6, color='black')
+        #     if len(path_data[t]) > 0:
+        #         ax2.text(path_data[t][0][0] + 0.05, path_data[t][0][1] + 0.05, str(t), fontsize=6, color='blue')
+
+        # max_humans = max(len(timestep)-1 for timestep in path_data) if num_timesteps > 0 else 0
+        # ax2.set_title(f'Robot Path and Human Positions\n(Max Humans: {max_humans})')
+        # ax2.set_xlabel('X Position (m)')
+        # ax2.set_ylabel('Y Position (m)')
+        # ax2.grid(True, alpha=0.3)
+        # ax2.axis('equal')
+
+        # # Legend
+        # handles = [
+        #     Line2D([0], [0], color='blue', lw=2, label='Robot Path'),
+        #     Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=10, label='Robot Start'),
+        #     Line2D([0], [0], marker='o', color='w', markerfacecolor='red', markersize=10, label='Robot End'),
+        # ]
+        # ax2.legend(handles=handles, bbox_to_anchor=(1.05, 1), loc='upper left')
+
         # Trajectory subplot
         robot_x, robot_y = [], []
         for t in range(num_timesteps):
@@ -844,9 +900,13 @@ class CrowdNavMPCNode(Node):
         ax2.set_title(f'Robot Path and Human Positions\n(Max Humans: {max_humans})')
         ax2.set_xlabel('X Position (m)')
         ax2.set_ylabel('Y Position (m)')
-        ax2.grid(True, alpha=0.3)
-        ax2.axis('equal')
 
+        # Set axis limits to -10 to +10
+        ax2.set_xlim(-10, 10)
+        ax2.set_ylim(-10, 10)
+
+        ax2.grid(True, alpha=0.3)
+        ax2.axis('equal')  # Ensures equal scaling (optional)
         # Legend
         handles = [
             Line2D([0], [0], color='blue', lw=2, label='Robot Path'),
@@ -854,6 +914,7 @@ class CrowdNavMPCNode(Node):
             Line2D([0], [0], marker='o', color='w', markerfacecolor='red', markersize=10, label='Robot End'),
         ]
         ax2.legend(handles=handles, bbox_to_anchor=(1.05, 1), loc='upper left')
+
 
         ax3.plot(self.linear_vel, 'r-', label='Linear Velocity')  # Plot as a red line
         ax3.set_title('Linear Velocity Over Time')

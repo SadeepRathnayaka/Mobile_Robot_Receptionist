@@ -71,65 +71,81 @@ class NewMPCReal():
             predicted_human_poses = orca_policy.predictAllForTimeHorizon(state)      
             #logging.info(f"predict {predicted_human_poses}")
 
-            # Step 2: Setup MPC using CasADi
-            nx_r = 3  # Robot state: [px, py, theta]
-            nu_r = 2  # Robot control inputs: [v, omega]
+        else:
+            # Convert robot_state (of type SelfState) to FullState
+            robot_full_state = FullState(px=robot_state.px,  py=robot_state.py, vx=robot_state.vx,  vy=robot_state.vy, radius=robot_state.radius, 
+                                        gx=robot_state.gx,  gy=robot_state.gy, v_pref=robot_state.v_pref,  theta=robot_state.theta,  omega=robot_state.omega)
             
-            # Concatenate vx and vy into a vector, then compute the squared sum
-            u_current = cs.vertcat(cs.sumsqr(cs.vertcat(robot_state.vx, robot_state.vy)), robot_state.omega)
-
             
-            # Create Opti object
-            opti = cs.Opti()  # CasADi optimization problem
-            U_opt = opti.variable(nu_r, self.horizon)  # Decision variables for control inputs
+        
 
-            # Define robot dynamics based on accumulated control inputs
-            def dynamics(x0, U):
-                states = []
-                states.append(x0)
-                #U = np.array(cs.MX(U))
-
+            # Create a FullyObservableJointState with the new robot_full_state
+            state = FullyObservableJointState(self_state=robot_full_state, human_states=human_states, static_obs=[])
                 
-                for t in range(self.horizon):
-                    #u_t = U[:, t]
-                    v = U[0,t]
-                    omega = U[1,t]
+    
 
-                    #print("V",cs.MX(v))
-                    #print("omega",cs.MX(omega))
-
-
-                    u_t =[v,omega]
-                    
-                    
-                    
-                    # Update the robot's state using the control input at the current time step
-                    epsilon = 1e-6
-                    #next_state = states[t] + cs.vertcat(
-                        #u_t[0] * (cs.sin(states[t][2] - u_t[1] * self.time_step) - cs.sin(states[t][2])) / (u_t[1] + epsilon),
-                        #u_t[0] * (-cs.cos(states[t][2] + u_t[1] * self.time_step) + cs.cos(states[t][2])) / (u_t[1] + epsilon),
-                        #u_t[1] * self.time_step
-                    #)
-
-                    next_state = states[t] + cs.vertcat(
-                        v * (cs.cos(states[t][2] + v* self.time_step)),
-                        v * (cs.sin(states[t][2] + v * self.time_step)) ,
-                        omega * self.time_step
-                    )
-
-                    
-
-
-                    states.append(next_state)
-                
-                return states[1:]
-
+        # Step 2: Setup MPC using CasADi
+        nx_r = 3  # Robot state: [px, py, theta]
+        nu_r = 2  # Robot control inputs: [v, omega]
+        
+        # Concatenate vx and vy into a vector, then compute the squared sum
+        u_current = cs.vertcat(cs.sumsqr(cs.vertcat(robot_state.vx, robot_state.vy)), robot_state.omega)
 
         
-            X_pred = dynamics(x_inital, U_opt)
+        # Create Opti object
+        opti = cs.Opti()  # CasADi optimization problem
+        U_opt = opti.variable(nu_r, self.horizon)  # Decision variables for control inputs
+
+        # Define robot dynamics based on accumulated control inputs
+        def dynamics(x0, U):
+            states = []
+            states.append(x0)
+            #U = np.array(cs.MX(U))
+
             
+            for t in range(self.horizon):
+                #u_t = U[:, t]
+                v = U[0,t]
+                omega = U[1,t]
+
+                #print("V",cs.MX(v))
+                #print("omega",cs.MX(omega))
+
+
+                u_t =[v,omega]
+                
+                
+                
+                # Update the robot's state using the control input at the current time step
+                epsilon = 1e-6
+                #next_state = states[t] + cs.vertcat(
+                    #u_t[0] * (cs.sin(states[t][2] - u_t[1] * self.time_step) - cs.sin(states[t][2])) / (u_t[1] + epsilon),
+                    #u_t[0] * (-cs.cos(states[t][2] + u_t[1] * self.time_step) + cs.cos(states[t][2])) / (u_t[1] + epsilon),
+                    #u_t[1] * self.time_step
+                #)
+
+                next_state = states[t] + cs.vertcat(
+                    v * (cs.cos(states[t][2] + v* self.time_step)),
+                    v * (cs.sin(states[t][2] + v * self.time_step)) ,
+                    omega * self.time_step
+                )
+
+                
+
+
+                states.append(next_state)
             
-            goal_pos = cs.MX([robot_state.gx, robot_state.gy])
+            return states[1:]
+
+
+    
+        X_pred = dynamics(x_inital, U_opt)
+        
+        
+        goal_pos = cs.MX([robot_state.gx, robot_state.gy])
+
+
+        if (env_state.human_states != []):
 
             # Step 3: Cost function for goal deviation and control effort
             Q_goal = 500 # Medium priority to reach the goal
@@ -138,6 +154,7 @@ class NewMPCReal():
             Q_terminal = 500# Strong weight to reach the goal at the terminal state
             Q_human = 5# 5
             Q_orientation = 3
+
 
             
             num_humans = len(predicted_human_poses[0][0][1:])
@@ -328,79 +345,6 @@ class NewMPCReal():
 
         else:
 
-            # Convert robot_state (of type SelfState) to FullState
-            robot_full_state = FullState(px=robot_state.px,  py=robot_state.py, vx=robot_state.vx,  vy=robot_state.vy, radius=robot_state.radius, 
-                                        gx=robot_state.gx,  gy=robot_state.gy, v_pref=robot_state.v_pref,  theta=robot_state.theta,  omega=robot_state.omega)
-            
-            
-        
-
-            # Create a FullyObservableJointState with the new robot_full_state
-            state = FullyObservableJointState(self_state=robot_full_state, human_states=human_states, static_obs=[])
-                
-            # Step 1: Predict future human positions over the time horizon using ORCA
-            orca_policy = ORCAPlusAll(self.time_step, self.horizon)
-
-
-            # Step 2: Setup MPC using CasADi
-            nx_r = 3  # Robot state: [px, py, theta]
-            nu_r = 2  # Robot control inputs: [v, omega]
-            
-            # Concatenate vx and vy into a vector, then compute the squared sum
-            u_current = cs.vertcat(cs.sumsqr(cs.vertcat(robot_state.vx, robot_state.vy)), robot_state.omega)
-
-            
-            # Create Opti object
-            opti = cs.Opti()  # CasADi optimization problem
-            U_opt = opti.variable(nu_r, self.horizon)  # Decision variables for control inputs
-
-            # Define robot dynamics based on accumulated control inputs
-            def dynamics(x0, U):
-                states = []
-                states.append(x0)
-                #U = np.array(cs.MX(U))
-
-                
-                for t in range(self.horizon):
-                    #u_t = U[:, t]
-                    v = U[0,t]
-                    omega = U[1,t]
-
-                    #print("V",cs.MX(v))
-                    #print("omega",cs.MX(omega))
-
-
-                    u_t =[v,omega]
-                    
-                    
-                    
-                    # Update the robot's state using the control input at the current time step
-                    epsilon = 1e-6
-                    #next_state = states[t] + cs.vertcat(
-                        #u_t[0] * (cs.sin(states[t][2] - u_t[1] * self.time_step) - cs.sin(states[t][2])) / (u_t[1] + epsilon),
-                        #u_t[0] * (-cs.cos(states[t][2] + u_t[1] * self.time_step) + cs.cos(states[t][2])) / (u_t[1] + epsilon),
-                        #u_t[1] * self.time_step
-                    #)
-
-                    next_state = states[t] + cs.vertcat(
-                        v * (cs.cos(states[t][2] + v* self.time_step)),
-                        v * (cs.sin(states[t][2] + v * self.time_step)) ,
-                        omega * self.time_step
-                    )
-
-                    
-
-
-                    states.append(next_state)
-                
-                return states[1:]
-
-
-        
-            X_pred = dynamics(x_inital, U_opt)
-            
-            
-            goal_pos = cs.MX([robot_state.gx, robot_state.gy])
 
             # Step 3: Cost function for goal deviation and control effort
             Q_goal = 500 # Medium priority to reach the goal

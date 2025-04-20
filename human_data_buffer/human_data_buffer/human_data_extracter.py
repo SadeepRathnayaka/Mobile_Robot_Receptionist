@@ -15,7 +15,7 @@ class VelocityExtractor(Node):
         # subscribe to x position, y position, and class topics
         self.susbscription = self.create_subscription(
             Entities,
-            '/object_tracker/laser_data_array',
+            '/object_tracker/laser_data_array_',
             self.callback_velocity_input,
             10
             )
@@ -64,7 +64,7 @@ class VelocityExtractor(Node):
            
                 # if agent left
                 #if pre_x == 0.0 or pre_y == 0.0:
-                if y_position == 0.0:
+                if y_position >= 50.0 or x_position>= 50.0:
                     vx = 0.0
                     vy = 0.0
                     cl_id = "-1"
@@ -130,11 +130,11 @@ class VelocityExtractor(Node):
         msg.y_positions = y_positions
         self.pub_velocity_class.publish(msg)
 
-        self.publish_latest_positions(msg)
-        self.publish_latest_velocities(msg)
+        # self.publish_latest_positions(msg)
+        # self.publish_latest_velocities(msg)
 
-        print(f"x velocities {x_vel}")
-        print(f"y velocities {y_vel}")
+        # print(f"x velocities {x_vel}")
+        # print(f"y velocities {y_vel}")
 
         # loging the published data
         # self.get_logger().info(f'Published x velocity: {x_vel}')

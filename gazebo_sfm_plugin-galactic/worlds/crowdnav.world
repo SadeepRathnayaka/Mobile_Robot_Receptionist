@@ -99,6 +99,22 @@
             <pose frame=''>-3.146710 2.476204 0.0 0 -0 -1.569673</pose>
         </model>
 
+        <model name='Wardrobe_01_002'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_Wardrobe_01</uri>
+            </include>
+            <pose frame=''>3.146710 -5.376204 0.0 0 -0 -1.569673</pose>
+        </model>
+
+        <model name='Wardrobe_01_003'>
+            <static>true</static>
+            <include>
+                <uri>model://aws_robomaker_residential_Wardrobe_01</uri>
+            </include>
+            <pose frame=''>8.946710 -1.476204 0.0 0 -0 -1.569673</pose>
+        </model>
+
         <model name='RoomWindow_01_001'>
             <static>true</static>
             <include>

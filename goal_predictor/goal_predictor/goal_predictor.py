@@ -157,9 +157,9 @@ class GoalPredictor(Node):
             self.goals.x[k] = D[np.argmax(destination_probs)][0]
             self.goals.y[k] = D[np.argmax(destination_probs)][1]
 
-        self.publish_goal_marker()
-        self.publish_position_marker()
-        self.publish_velocity_marker()
+        # self.publish_goal_marker()
+        # self.publish_position_marker()
+        # self.publish_velocity_marker()
 
         return self.goals
         #return D[np.argmax(destination_probs)], destination_probs

@@ -159,85 +159,89 @@ class DataBufferNode(Node):
         }
     
     def publish_buffer(self):
-        msg = Buffer()  # Create a new Buffer message
+        try:
+            msg = Buffer()  # Create a new Buffer message
 
-        # nested structure
-        agent_ids = []
-        x_velocities = []
-        y_velocities = []
-        class_ids = []
-        x_positions = []
-        y_positions = []
-        x_mean = []
-        y_mean = []
-        x_std_dev = []
-        y_std_dev = []
-        x_variance = []
-        y_variance = []
-        majority_class_ids = []
-
-
-        for i in range(len(self.agent_matrix)):
-            agent_ids.append(self.agent_matrix[i, 0])
-            x_vel_list = DataElementFloat() # create a new DataElementFloat object for each agent to store x velocities of the agent
-            y_vel_list = DataElementFloat()
-            class_list = DataElementString()
-            x_pos_list = DataElementFloat()
-            y_pos_list = DataElementFloat()
-
-            x_vel_list.float_data = list(self.agent_matrix[i, 1])
-            y_vel_list.float_data = list(self.agent_matrix[i, 2])
-            class_list.string_data = list(self.agent_matrix[i, 3])
-            x_pos_list.float_data = list(self.agent_matrix[i, 4])
-            y_pos_list.float_data = list(self.agent_matrix[i, 5])
+            # nested structure
+            agent_ids = []
+            x_velocities = []
+            y_velocities = []
+            class_ids = []
+            x_positions = []
+            y_positions = []
+            x_mean = []
+            y_mean = []
+            x_std_dev = []
+            y_std_dev = []
+            x_variance = []
+            y_variance = []
+            majority_class_ids = []
 
 
-            x_velocities.append(x_vel_list)
-            y_velocities.append(y_vel_list)
-            class_ids.append(class_list)
-            x_positions.append(x_pos_list)
-            y_positions.append(y_pos_list)
+            for i in range(len(self.agent_matrix)):
+                agent_ids.append(self.agent_matrix[i, 0])
+                x_vel_list = DataElementFloat() # create a new DataElementFloat object for each agent to store x velocities of the agent
+                y_vel_list = DataElementFloat()
+                class_list = DataElementString()
+                x_pos_list = DataElementFloat()
+                y_pos_list = DataElementFloat()
+
+                x_vel_list.float_data = list(self.agent_matrix[i, 1])
+                y_vel_list.float_data = list(self.agent_matrix[i, 2])
+                class_list.string_data = list(self.agent_matrix[i, 3])
+                x_pos_list.float_data = list(self.agent_matrix[i, 4])
+                y_pos_list.float_data = list(self.agent_matrix[i, 5])
 
 
-            # Get statistics from the statistics dictionary
-            stats = self.agent_matrix[i, 6]
-            x_mean.append(stats.get('x_mean', 0))
-            y_mean.append(stats.get('y_mean', 0))
-            x_std_dev.append(stats.get('x_std_dev', 0))
-            y_std_dev.append(stats.get('y_std_dev', 0))
-            x_variance.append(stats.get('x_variance', 0))
-            y_variance.append(stats.get('y_variance', 0))
-            majority_class_ids.append(stats.get('majority_class_id', -1))
+                x_velocities.append(x_vel_list)
+                y_velocities.append(y_vel_list)
+                class_ids.append(class_list)
+                x_positions.append(x_pos_list)
+                y_positions.append(y_pos_list)
 
-        print("x_velocities")
-        print(x_velocities)
 
-        # Assign the formatted data to the message fields
-        msg.agent_count = int(len(agent_ids))
-        msg.agent_ids = agent_ids
-        msg.x_velocities = x_velocities
-        msg.y_velocities = y_velocities
-        msg.class_ids = class_ids
-        msg.x_positions = x_positions
-        msg.y_positions = y_positions
-        print(f"x_mean {x_mean}")
-        msg.x_mean = x_mean
-        msg.y_mean = y_mean
-        msg.x_std_dev = x_std_dev
-        msg.y_std_dev = y_std_dev
-        msg.x_variance = x_variance
-        msg.y_variance = y_variance
-        msg.majority_class_id = majority_class_ids
-        # publish the message
-        self.pub_buffer.publish(msg)
-        self.get_logger().info("Published buffer data.")
+                # Get statistics from the statistics dictionary
+                stats = self.agent_matrix[i, 6]
+                x_mean.append(stats.get('x_mean', 0))
+                y_mean.append(stats.get('y_mean', 0))
+                x_std_dev.append(stats.get('x_std_dev', 0))
+                y_std_dev.append(stats.get('y_std_dev', 0))
+                x_variance.append(stats.get('x_variance', 0))
+                y_variance.append(stats.get('y_variance', 0))
+                majority_class_ids.append(stats.get('majority_class_id', -1))
 
-        self.human_position_marker(msg)
-        self.human_velocity_marker(msg)
+            print("x_velocities")
+            print(x_velocities)
 
-        # log buffer x and y velocities
-        self.get_logger().info(f"x_velocities: {x_velocities}")
-        self.get_logger().info(f"y_velocities: {y_velocities}")
+            # Assign the formatted data to the message fields
+            msg.agent_count = int(len(agent_ids))
+            msg.agent_ids = agent_ids
+            msg.x_velocities = x_velocities
+            msg.y_velocities = y_velocities
+            msg.class_ids = class_ids
+            msg.x_positions = x_positions
+            msg.y_positions = y_positions
+            print(f"x_mean {x_mean}")
+            msg.x_mean = x_mean
+            msg.y_mean = y_mean
+            msg.x_std_dev = x_std_dev
+            msg.y_std_dev = y_std_dev
+            msg.x_variance = x_variance
+            msg.y_variance = y_variance
+            msg.majority_class_id = majority_class_ids
+            # publish the message
+            self.pub_buffer.publish(msg)
+            self.get_logger().info("Published buffer data.")
+
+            # self.human_position_marker(msg)
+            # self.human_velocity_marker(msg)
+
+            # log buffer x and y velocities
+            self.get_logger().info(f"x_velocities: {x_velocities}")
+            self.get_logger().info(f"y_velocities: {y_velocities}")
+
+        except:
+            pass
 
     def remove_agent(self, index):
         # Remove the row corresponding to the agent that has left
