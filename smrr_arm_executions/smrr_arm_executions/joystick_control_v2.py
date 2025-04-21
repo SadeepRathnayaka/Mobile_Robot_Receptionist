@@ -30,6 +30,8 @@ class JoystickController(Node):
         self.elbow_min_angle = 0
         self.wrist_min_angle = -45
 
+        self.angle = 1.0
+
         # For tracking changes
         self.last_published_angles = [0.0, 0.0, 0.0, 0.0]
         self.publish_rate = self.create_timer(0.05, self.publish_current_angles)  # 20Hz
@@ -42,45 +44,45 @@ class JoystickController(Node):
         # Only process inputs when button 5 (RB) is pressed
         if msg.buttons[5] == 1:
             # Shoulder control (left stick up/down)
-            if abs(msg.axes[1]) > 0.2:
-                self.shoulder_joint += 0.5 * np.sign(msg.axes[1])
+            if abs(msg.axes[7]) > 0.2:
+                self.shoulder_joint += self.angle * np.sign(msg.axes[7])
                 self.shoulder_joint = np.clip(self.shoulder_joint, self.shoulder_min_angle, self.shoulder_max_angle)
                 joint_adjusted = True
                 self.get_logger().info(f"Shoulder joint: {self.shoulder_joint}", throttle_duration_sec=0.5)
 
             # Bicep control (left stick left/right)
-            if abs(msg.axes[0]) > 0.2:
-                self.bicep_joint += 0.5 * np.sign(msg.axes[0])
+            if abs(msg.axes[6]) > 0.2:
+                self.bicep_joint += self.angle * np.sign(msg.axes[6])
                 self.bicep_joint = np.clip(self.bicep_joint, self.bicep_min_angle, self.bicep_max_angle)
                 joint_adjusted = True
                 self.get_logger().info(f"Bicep joint: {self.bicep_joint}", throttle_duration_sec=0.5)
 
             # Elbow control (buttons Y and A)
             if msg.buttons[3] == 1:  # Y button
-                self.elbow_joint += 0.5
+                self.elbow_joint += self.angle
                 self.elbow_joint = min(self.elbow_joint, self.elbow_max_angle)
                 joint_adjusted = True
                 self.get_logger().info(f"Elbow joint: {self.elbow_joint}", throttle_duration_sec=0.5)
             elif msg.buttons[0] == 1:  # A button
-                self.elbow_joint -= 0.5
+                self.elbow_joint -= self.angle
                 self.elbow_joint = max(self.elbow_joint, self.elbow_min_angle)
                 joint_adjusted = True
                 self.get_logger().info(f"Elbow joint: {self.elbow_joint}", throttle_duration_sec=0.5)
 
             # Wrist control (buttons X and B)
-            if msg.buttons[2] == 1:  # X button
-                self.wrist_joint += 0.5
+            if msg.buttons[1] == 1:  # X button
+                self.wrist_joint += self.angle
                 self.wrist_joint = min(self.wrist_joint, self.wrist_max_angle)
                 joint_adjusted = True
                 self.get_logger().info(f"Wrist joint: {self.wrist_joint}", throttle_duration_sec=0.5)
-            elif msg.buttons[1] == 1:  # B button
-                self.wrist_joint -= 0.5
+            elif msg.buttons[2] == 1:  # B button
+                self.wrist_joint -= self.angle
                 self.wrist_joint = max(self.wrist_joint, self.wrist_min_angle)
                 joint_adjusted = True
                 self.get_logger().info(f"Wrist joint: {self.wrist_joint}", throttle_duration_sec=0.5)
 
             # Home position (button LB)
-            if msg.buttons[4] == 1:
+            if msg.buttons[6] == 1:
                 self.shoulder_joint = 0.0
                 self.bicep_joint = 0.0
                 self.elbow_joint = 0.0
@@ -109,7 +111,7 @@ class JoystickController(Node):
         ]
 
         # Only publish if angles have changed significantly
-        if not np.allclose(current_angles, self.last_published_angles, atol=0.9):
+        if not np.allclose(current_angles, self.last_published_angles, atol=5):
             target_angle_msgs = Float64MultiArray()
             target_angle_msgs.data = current_angles
             self.angle_pub.publish(target_angle_msgs)

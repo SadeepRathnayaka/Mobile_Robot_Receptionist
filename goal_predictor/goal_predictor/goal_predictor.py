@@ -73,6 +73,8 @@ class GoalPredictor(Node):
         self.vel.x           = xvelocities_of_agents 
         self.vel.y           = yvelocities_of_agents
 
+        print(f"x vels {xvelocities_of_agents }")
+
         
         
         self.goals.count     = self.agents.count

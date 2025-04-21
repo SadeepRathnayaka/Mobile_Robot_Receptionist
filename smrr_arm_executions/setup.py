@@ -21,7 +21,9 @@ setup(
     entry_points={
         'console_scripts': [
         	'joystick_control = smrr_arm_executions.joystick_control:main',
+            'joystick_control_v2 = smrr_arm_executions.joystick_control_v2:main',
         	'serial_write = smrr_arm_executions.serial_write:main',
+            'serial_write_v2 = smrr_arm_executions.serial_write_v2:main',
         	'arm_alignment = smrr_arm_executions.arm_alignment:main',
         	'hand_detector = smrr_arm_executions.hand_detector:main',
         	'arm_movements = smrr_arm_executions.arm_movements:main',

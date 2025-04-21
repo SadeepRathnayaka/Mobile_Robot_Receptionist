@@ -40,7 +40,11 @@ class NewMPCReal():
         robot_state = env_state.self_state
         robot_radius = robot_state.radius
         x_inital =(env_state.self_state.px, env_state.self_state.py, env_state.self_state.theta)
+        goal = (env_state.self_state.gx , env_state.self_state.gy)
         static_obs = env_state.static_obs
+        u_current = cs.vertcat(cs.sumsqr(cs.vertcat(robot_state.vx, robot_state.vy)), robot_state.omega)
+        print("######################################################################")
+        print(f"Goal before {goal}")
 
 
         if robot_state.omega is None:
@@ -60,6 +64,9 @@ class NewMPCReal():
                                     gx=hum.gx, gy=hum.gy, v_pref=self.human_max_speed, 
                                     theta=np.arctan2(hum.vy, hum.vx), radius=hum.radius, omega=None)                    
                 human_states.append(hum_state)
+
+
+            print(f"human_count{len(env_state.human_states)}")
             
         
 
@@ -83,13 +90,13 @@ class NewMPCReal():
             state = FullyObservableJointState(self_state=robot_full_state, human_states=human_states, static_obs=[])
                 
     
-
+   
         # Step 2: Setup MPC using CasADi
         nx_r = 3  # Robot state: [px, py, theta]
         nu_r = 2  # Robot control inputs: [v, omega]
         
         # Concatenate vx and vy into a vector, then compute the squared sum
-        u_current = cs.vertcat(cs.sumsqr(cs.vertcat(robot_state.vx, robot_state.vy)), robot_state.omega)
+        
 
         
         # Create Opti object
@@ -142,16 +149,16 @@ class NewMPCReal():
         X_pred = dynamics(x_inital, U_opt)
         
         
-        goal_pos = cs.MX([robot_state.gx, robot_state.gy])
+        # goal_pos = goal  #MX([robot_state.gx, robot_state.gy])
 
 
         if (env_state.human_states != []):
 
             # Step 3: Cost function for goal deviation and control effort
-            Q_goal = 500 # Medium priority to reach the goal
+            Q_goal = 1000 # Medium priority to reach the goal
             Q_control = 10# Moderate weight for smooth control inputs
             Q_pref = 5 # Medium preference for stable velocity
-            Q_terminal = 500# Strong weight to reach the goal at the terminal state
+            Q_terminal = 1000# Strong weight to reach the goal at the terminal state
             Q_human = 5# 5
             Q_orientation = 3
 
@@ -177,7 +184,7 @@ class NewMPCReal():
             def cost_function(X_pred, U, human_states):
                 cost = 0
                 for t in range(self.horizon):
-                    dist_to_goal = cs.sumsqr(X_pred[t][:2] - goal_pos)  # Distance to the goal
+                    dist_to_goal = cs.sumsqr(X_pred[t][:2] - goal)  # Distance to the goal
                     # angle_to_goal = np.arctan2((goal_pos-X_pred[t][:2])[1],(goal_pos-X_pred[t][:2])[0])
                     # cost += cs.sumsqr(angle_to_goal-X_pred[t][2])*Q_orientation
 
@@ -202,7 +209,7 @@ class NewMPCReal():
                     #cost += Q_goal * dist_to_goal + control_pref * Q_pref
                 
                 # Terminal state goal deviation
-                dist_terminal = cs.sumsqr(X_pred[-1][:2] - goal_pos)
+                dist_terminal = cs.sumsqr(X_pred[-1][:2] - goal)
                 cost += Q_terminal * dist_terminal
                 return cost
 
@@ -288,8 +295,8 @@ class NewMPCReal():
             # Add control bounds
             opti.subject_to(U_opt[0, :] <= 0.5)  # Upper bound for v
             opti.subject_to(U_opt[0, :] >= 0.0)  # Lower bound for v
-            opti.subject_to(U_opt[1, :] >= -1)
-            opti.subject_to(U_opt[1, :] <= 1)
+            opti.subject_to(U_opt[1, :] >= -0.5)
+            opti.subject_to(U_opt[1, :] <= 0.5)
         
 
             # Minimize total cost
@@ -316,6 +323,8 @@ class NewMPCReal():
                 print("Error")
                 #logging.error(f"Solver failed with error: {e}")
                 return (0,0) , [], [] # Safe default action
+            print("##################################   With Humans   ####################################")
+            print(f"Goal after {goal}")
 
             # Get the optimal control input for the first step
             u_mpc = sol.value(U_opt[:, 0]) 
@@ -347,10 +356,10 @@ class NewMPCReal():
 
 
             # Step 3: Cost function for goal deviation and control effort
-            Q_goal = 500 # Medium priority to reach the goal
+            Q_goal = 1000 # Medium priority to reach the goal
             Q_control = 10 # Moderate weight for smooth control inputs
             Q_pref = 5 # Medium preference for stable velocity
-            Q_terminal = 500# Strong weight to reach the goal at the terminal state
+            Q_terminal = 1000# Strong weight to reach the goal at the terminal state
             Q_human = 3 # 5
             Q_orientation = 3
 
@@ -360,7 +369,7 @@ class NewMPCReal():
             def cost_function(X_pred, U, human_states):
                 cost = 0
                 for t in range(self.horizon):
-                    dist_to_goal = cs.sumsqr(X_pred[t][:2] - goal_pos)  # Distance to the goal
+                    dist_to_goal = cs.sumsqr(X_pred[t][:2] - goal)  # Distance to the goal
                     #angle_to_goal = np.arctan2((goal_pos-X_pred[t][:2])[1],(goal_pos-X_pred[t][:2])[0])
                     #cost += cs.sumsqr(angle_to_goal-X_pred[t][2])*Q_orientation
 
@@ -379,7 +388,7 @@ class NewMPCReal():
                     #cost += Q_goal * dist_to_goal + control_pref * Q_pref
                 
                 # Terminal state goal deviation
-                dist_terminal = cs.sumsqr(X_pred[-1][:2] - goal_pos)
+                dist_terminal = cs.sumsqr(X_pred[-1][:2] - goal)
                 cost += Q_terminal * dist_terminal
                 return cost
 
@@ -445,8 +454,8 @@ class NewMPCReal():
             # Add control bounds
             opti.subject_to(U_opt[0, :] <= 0.5)  # Upper bound for v
             opti.subject_to(U_opt[0, :] >= 0.0)  # Lower bound for v
-            opti.subject_to(U_opt[1, :] >= -1)
-            opti.subject_to(U_opt[1, :] <= 1)
+            opti.subject_to(U_opt[1, :] >= -0.5)
+            opti.subject_to(U_opt[1, :] <= 0.5)
         
 
             # Minimize total cost
@@ -473,6 +482,9 @@ class NewMPCReal():
                 print("Error")
                 #logging.error(f"Solver failed with error: {e}")
                 return (0,0) , [], [] # Safe default action
+            
+            print("##################################Without Humans####################################")
+            print(f"Goal after {goal}")
 
             # Get the optimal control input for the first step
             u_mpc = sol.value(U_opt[:, 0]) 
