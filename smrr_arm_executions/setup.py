@@ -24,10 +24,13 @@ setup(
             'joystick_control_v2 = smrr_arm_executions.joystick_control_v2:main',
         	'serial_write = smrr_arm_executions.serial_write:main',
             'serial_write_v2 = smrr_arm_executions.serial_write_v2:main',
+            'serial_write_v3 = smrr_arm_executions.serial_write_v3:main',
+            'hand_gestures = smrr_arm_executions.hand_gestures:main',
         	'arm_alignment = smrr_arm_executions.arm_alignment:main',
         	'hand_detector = smrr_arm_executions.hand_detector:main',
         	'arm_movements = smrr_arm_executions.arm_movements:main',
         	'button_localization = smrr_arm_executions.button_localization:main',
+            'camera_node = smrr_arm_executions.camera_node:main',
         ],
     },
 )

@@ -15,10 +15,11 @@
   <export>
     <build_type>ament_python</build_type>
     
-    	<depend>std_msgs</depend>
+    <depend>std_msgs</depend>
   	<depend>sensor_msgs</depend>
   	<depend>geometry_msgs</depend>
-  
-  
+    <depend>cv_bridge</depend>
+    <depend>opencv-python</depend>
+
   </export>
 </package>
